@@ -1,0 +1,25 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+
+<%@ Property Category="1.DataBase" Name="columns" Type="SchemaExplorer.ColumnSchemaCollection"%>
+function checkMaxLength(){
+    var big='长度大于';
+    <%
+    foreach (var item in columns)
+	{
+    if (item.SystemType==typeof(System.String))
+    {%>
+     if(checklength('<%=item.Name%>',<%=item.Size%>))
+    {
+        return '<%=item.Description%>'+big+'<%=item.Size%>';
+    }
+	<% } }%>
+    return '';
+}

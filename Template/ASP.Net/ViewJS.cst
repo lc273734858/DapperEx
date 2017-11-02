@@ -1,0 +1,158 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+
+<%@ Property Category="1.DataBase" Name="table" Type="SchemaExplorer.TableSchema"%>
+<%@ Property Category="1.DataBase" Name="columns" Type="SchemaExplorer.ColumnSchemaCollection"%>
+<%@ Property Category="2.Script" Name="nameSpace" Type="String" Optional="True" Description="命名空间" %>
+<%@ Property Category="2.Script" Name="controller" Type="String" Optional="True" Description="控制器" %>
+<script runat="template">
+public string GetPrimayKey(ColumnSchema item)
+{
+    StringBuilder sb=new StringBuilder();
+    if (item.IsPrimaryKeyMember)
+	{
+        if ((bool)item.ExtendedProperties["CS_isIdentity"].Value==true)
+        	{
+                sb.AppendLine("[PrimaryKey(AutoIncrement=true)]");		 
+        	}
+            else
+                sb.AppendLine("[PrimaryKey]");
+		 
+	}
+    sb.AppendLine("[DataMember]");
+    return sb.ToString();
+}
+public string GetAlignClass(ColumnSchema item)
+{
+    string algin="";
+    if (item.SystemType==typeof(String))
+	{
+		 algin="text-left";
+	}
+    else
+    {
+        algin="text-right";
+    }
+    return algin;
+}
+</script>  
+<% var key=table.PrimaryKey.Name;  %>
+/// <reference path="../extend/APS.js" />
+/// <reference path="../_SysFrame/js/jquery.dataTables.js" />
+/// <reference path="../jquery/jquery.formdeserialize.js" />
+/// <reference path="../jquery/jquery.formSerialize.js" />
+/// <reference path="../Common.js" />
+
+var <%=controller%> = (function ($) {
+    var o;
+    var table;
+    var core = {
+        init: function (p) {
+            o = $.extend({
+                ControllerUrl: p.ControllerUrl,
+                PageSize: p.PageSize,
+                ObjectName: p.ObjectName,
+            });
+        },
+        GetTable: function () {
+            table = ExtendDataTable({
+                bInfo: false,//不显示页脚信息
+                bLengthChange: false,//不显示分页
+                entityName: "<%=controller%>tb",
+                bFilter: "false",
+                "bSort": true,
+                aoSearchParams: ["KeyWord"],
+                iDisplayLength: o.PageSize,
+                url: o.ControllerUrl + "GetPageData",
+                aoColumns: [
+                    {
+                        "sTitle": "操作", "sClass": "text-center col-md-1", "bSortable": false, "mDataProp": function (source, type, val) {
+                            var html = '';
+                            if (source.Status==0) {
+                                html += '<button type="button" class="btn btn-success btn-xs" onclick="' +o.ObjectName + '.AcceptForm(\'' + source.<%=key%> + '\');">同意</button>\
+                                <button type="button" class="btn btn-danger btn-xs" onclick="controller.Refuse(\'' + source.DeptID + '\',\'' + source.DeptName + '\');"  style="margin-left:5px;">拒绝</button>';
+                            }
+                            else{
+                                html += '<button type="button" class="btn btn-danger btn-xs" onclick="' +o.ObjectName + '.Delete(\'' + source.<%=key%> + '\');" style="margin-left:5px;">删除</button>';
+                            }
+                            return html;
+                        }
+                    },
+                   <%
+                var lastItem=columns[columns.Count-1];
+                for (int i = 0; i < columns.Count-1; i++)
+                {
+                    var item=columns[i];
+                    
+                 %>
+                  { "sTitle": "<%=item.Description %>", "sClass": "<%=GetAlignClass(item)%> col-md-2", "mDataProp": "<%=item.Name%>" },
+                <%} %>
+                { "sTitle": "<%=lastItem.Description %>", "sClass": "<%=GetAlignClass(lastItem)%> col-md-2", "mDataProp": "<%=lastItem.Name%>" }
+                ],
+                fnCreatedRow: function (nRow, aData, iDataIndex) {
+                },
+                data: function () {
+                    var fields = [<%=GetFieldString(columns)%>,'Status'];
+                    return GenerateWhere(fields);
+                }
+            });
+        },    
+        Delete:function(key)
+        {
+            Amoeba.ModalShowConfirm("确认删除？", false, function () {
+                $.ajax({
+                    type: "Post",
+                    url: o.ControllerUrl + "DeleteByPrimaryKey/",
+                    data: { <%=key%>: key },
+                    dataType: "json",
+                    error: function (msg) {
+                        //UIkit.notify(msg.responseText);
+                    },
+                    success: function (result) {
+                        if (result.Status == 1) {
+                            Amoeba.ModalShowMessage("成功删除");
+                            table.fnDraw();
+                        }
+                        else if (result.Message) {
+                            Amoeba.ModalShowMessage(result.Message);
+                        }
+                    }
+                });
+            });
+        },
+        Query: function () {
+            table.fnDraw();
+        },
+        ClearQuery: function () {
+            var status = $('#Status').val();
+            $('#<%=controller%>Query input').val('');
+            $('#Status').val(status);
+            core.Query();
+        }
+    };
+
+    return function (options) {
+        core.init(options);
+        return core;
+    }
+}(jQuery));
+
+
+<script runat="template">
+public string GetFieldString(ColumnSchemaCollection columns)
+{
+    StringBuilder sb=new StringBuilder();
+    foreach (var item in columns)
+	{
+		 sb.AppendFormat(",'{0}'",item.Name);
+	}   
+    return sb.Remove(0,1).ToString();
+}
+</script>

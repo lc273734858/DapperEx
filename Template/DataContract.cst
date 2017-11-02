@@ -1,0 +1,108 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+
+<%@ Property Category="1.DataBase" Name="table" Type="SchemaExplorer.TableSchema" Editor=""%>
+<%@ Property Category="2.PropertyInfo" Name="nmameSpace" Type="String" %>
+<%string tablename=string.Format("[{0}].[{1}]",table.Owner,table.Name);%>
+using System;
+using System.Runtime.Serialization;
+using FWW.Framework.DataOperation.Dapper;
+
+namespace <%=nmameSpace%>.<%=table.Owner %>
+{
+    [Table(Name = "<%=tablename%>")]
+    [DataContract]
+    public sealed partial class <%=table.Name %>Entity
+    {
+        #region ConstFields
+        <%foreach (ColumnSchema item in table.Columns)
+    	{%>
+        /// <summary>
+        /// <%=item.Description%>
+        /// </summary>
+        [IgnoreDataMember]
+        public const string F_<%=item.Name%>="<%=item.Name%>";
+        <%} %>
+        #endregion
+        
+        #region DataMember
+        <%foreach (ColumnSchema item in table.Columns)
+    	{  %>
+        /// <summary>
+        /// <%=item.Description%>
+        /// </summary>
+        <%=GetPrimayKey(item)%>
+        public <%=GetSystemType(item)%> <%=item.Name%>{get;set;}
+        <%} %>
+        #endregion
+        
+        #region Method
+        public string ToString()
+        {
+            return string.Format("<%=GetFieldFomatString(table.Columns)%>",<%=GetFieldString(table.Columns)%>);
+        }
+        #endregion
+    }
+}
+<script runat="template">
+/// <summary>
+/// 
+/// </summary>
+/// <param name="item"></param>
+/// <returns></returns>
+public string GetPrimayKey(ColumnSchema item)
+{
+    StringBuilder sb=new StringBuilder();
+    if (item.IsPrimaryKeyMember)
+	{
+        if ((bool)item.ExtendedProperties["CS_isIdentity"].Value==true)
+        	{
+        sb.AppendLine("[PrimaryKey(AutoIncrement=true)]");		 
+        	}
+            else
+                sb.AppendLine("[PrimaryKey]");
+		 
+	}
+    sb.Append("[DataMember]");
+    return sb.ToString();
+}
+/// <summary>
+/// 
+/// </summary>
+/// <param name="item"></param>
+/// <returns></returns>
+public string GetSystemType(ColumnSchema item)
+{
+    if (item.SystemType!=typeof(System.String))//&&item.AllowDBNull
+    	return item.SystemType.Name+"?";
+    return item.SystemType.Name;
+}
+public string GetFieldString(ColumnSchemaCollection columns)
+{
+    StringBuilder sb=new StringBuilder();
+    foreach (var item in columns)
+	{
+		 sb.AppendFormat(",{0}",item.Name);
+	}   
+    return sb.Remove(0,1).ToString();
+}
+public string GetFieldFomatString(ColumnSchemaCollection columns)
+{
+    StringBuilder sb=new StringBuilder();
+    int index=0;
+     foreach (var item in columns)
+	{
+		 sb.AppendFormat(",{0}={{{1}}}",item.Name,index);
+        index++;
+//        sb.Append("{"++"}");
+	}   
+    return sb.Remove(0,1).ToString();
+}
+</script>

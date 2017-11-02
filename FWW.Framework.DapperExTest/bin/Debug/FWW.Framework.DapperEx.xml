@@ -822,7 +822,7 @@
             <param name="oper"></param>
             <returns></returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:FWW.Framework.DapperEx.Field.BitwiseAND(FWW.Framework.DapperEx.Field)" -->
+        <!-- 对于成员“M:FWW.Framework.DapperEx.Field.BitwiseAND(FWW.Framework.DapperEx.Field)”忽略有格式错误的 XML 注释 -->
         <member name="M:FWW.Framework.DapperEx.Field.BitwiseOR(FWW.Framework.DapperEx.Field)">
             <summary>
             |
@@ -1218,6 +1218,71 @@
         <member name="T:FWW.Framework.DapperEx.FieldAttribute">
             <summary>
             
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.DapperEx.FieldExtend.Tips">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.DapperEx.FieldExtend.Like(System.Object,System.Object)">
+            <summary>
+            like '%value%' 模糊查询，同Contains。
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.DapperEx.FieldExtend.In``1(System.Object,``0[])">
+            <summary>
+            where field in (value,value,value)。传入Array或List&lt;T>。
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.DapperEx.FieldExtend.In``1(System.Object,System.Collections.Generic.List{``0})">
+            <summary>
+            where field in (value,value,value)。传入Array或List&lt;T>。
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.DapperEx.FieldExtend.NotIn``1(System.Object,``0[])">
+            <summary>
+            where field not in (value,value,value)。传入Array或List&lt;T>。
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.DapperEx.FieldExtend.NotIn``1(System.Object,System.Collections.Generic.List{``0})">
+            <summary>
+            where field not in (value,value,value)。传入Array或List&lt;T>。
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.DapperEx.FieldExtend.IsNull(System.Object)">
+            <summary>
+            IS NULL
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.DapperEx.FieldExtend.IsNotNull(System.Object)">
+            <summary>
+            IS NOT NULL
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.DapperEx.FieldExtend.As(System.Object,System.String)">
+            <summary>
+            As
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.DapperEx.FieldExtend.Sum(System.Object)">
+            <summary>
+            Sum
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.DapperEx.FieldExtend.Count(System.Object)">
+            <summary>
+            Count
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.DapperEx.FieldExtend.Avg(System.Object)">
+            <summary>
+            Avg
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.DapperEx.FieldExtend.Len(System.Object)">
+            <summary>
+            Len
             </summary>
         </member>
         <member name="T:FWW.Framework.DapperEx.LogHandler">
@@ -1904,7 +1969,7 @@
             LIKE
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "F:FWW.Framework.DapperEx.QueryOperator.BitwiseAND" -->
+        <!-- 对于成员“F:FWW.Framework.DapperEx.QueryOperator.BitwiseAND”忽略有格式错误的 XML 注释 -->
         <member name="F:FWW.Framework.DapperEx.QueryOperator.BitwiseOR">
             <summary>
             |
@@ -3755,13 +3820,13 @@
             <param name="tran"></param>
             <returns></returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:FWW.Framework.DapperEx.SqlSection.AddParameter(System.Data.Common.DbParameter[])" -->
+        <!-- 对于成员“M:FWW.Framework.DapperEx.SqlSection.AddParameter(System.Data.Common.DbParameter[])”忽略有格式错误的 XML 注释 -->
         <member name="M:FWW.Framework.DapperEx.SqlSection.AddInParameter(System.String,System.Data.DbType,System.Object)">
             <summary>
             添加参数
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:FWW.Framework.DapperEx.SqlSection.AddInParameter(System.String,System.Data.DbType,System.Int32,System.Object)" -->
+        <!-- 对于成员“M:FWW.Framework.DapperEx.SqlSection.AddInParameter(System.String,System.Data.DbType,System.Int32,System.Object)”忽略有格式错误的 XML 注释 -->
         <member name="F:FWW.Framework.DapperEx.DataContext.db">
             <summary>
             数据库

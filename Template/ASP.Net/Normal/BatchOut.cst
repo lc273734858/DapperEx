@@ -1,0 +1,107 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="Text" Debug="False" Description="生成PMA维护页面" %>
+
+<%@ Register Name="ControllerTemplate" Template="Controller.cst" MergeProperties="Flase" ExcludeProperties=""%>
+<%@ Register Name="ViewTemplate" Template="View.cst" MergeProperties="Flase" ExcludeProperties=""%>
+<%@ Register Name="JSTemplate" Template="JS.cst" MergeProperties="Flase" ExcludeProperties=""%>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="SchemaExplorer" %>
+
+<%@ Property Category="1.DataBase" Name="table" Type="SchemaExplorer.TableSchema" Optional="False"%>
+<%@ Property Category="1.DataBase" Name="displaycolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="显示字段" Optional="False"%>
+<%@ Property Category="1.DataBase" Name="searchcolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="查询字段" Optional="False"%>
+<%@ Property Category="1.DataBase" Name="editcolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="编辑字段" Optional="False"%>
+<%@ Property Category="1.DataBase" Name="editdisablecolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="编辑时禁用的字段" Optional="False"%>
+<%@ Property Category="1.DataBase" Name="Adddisablecolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="新增时禁用的字段" Optional="False"%>
+<%@ Property Category="1.DataBase" Name="Mustcolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="必须输入的字段" Optional="True"%>
+<%@ Property Category="1.DataBase" Name="primarykey" Type="String" Description="主键" Optional="False"%>
+<%@ Property Category="1.DataBase" Name="primarykeyNeedWrite" Type="Boolean" Description="新增时主键是否需要填写" Default="false" Optional="True"%>
+
+<%@ Property Category="2.Script" Name="nameSpace" Type="String" Optional="True" Description="命名空间" %>
+<%@ Property Category="2.Script" Name="title" Type="String" Optional="True" Description="页面标题" %>
+<%@ Property Category="2.Script" Name="FileName" Type="String" Optional="True" Description="文件名称" %>
+<%@ Property Category="3.Set" Name="FileDirectory" Type="String" Description="文件保存路径" Editor="System.Windows.Forms.Design.FolderNameEditor, System.Design, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"%>
+<%@ Property Category="1.DataBase" Name="AClear" Type="Boolean" Description="点击清除所有设置" OnChanged="ClearAll" Default="false"%>
+<%@ Property Category="1.DataBase" Name="ActiveClear" Type="Boolean" Description="清除按钮是否起作用" Default="false"%>
+
+<%
+try 
+	{
+        this.PropertiesLoaded+=(sender,args)=>{
+            ActiveClear=false;        
+        };
+        CodeTemplate Controller = new ControllerTemplate();
+        CodeTemplate View = new ViewTemplate();
+        CodeTemplate JS = new JSTemplate();
+
+        Controller.SetProperty("table",table);
+        Controller.SetProperty("displaycolumns",displaycolumns);
+        Controller.SetProperty("searchcolumns",searchcolumns);
+        Controller.SetProperty("editcolumns",editcolumns);
+        Controller.SetProperty("primarykey",primarykey);
+        Controller.SetProperty("primarykeyNeedWrite",primarykeyNeedWrite);
+        Controller.SetProperty("FileName",FileName);
+        Controller.SetProperty("nameSpace",nameSpace);
+
+        JS.SetProperty("table",table);
+        JS.SetProperty("displaycolumns",displaycolumns);
+        JS.SetProperty("searchcolumns",searchcolumns);
+        JS.SetProperty("editcolumns",editcolumns);
+        JS.SetProperty("primarykey",primarykey);
+        JS.SetProperty("primarykeyNeedWrite",primarykeyNeedWrite);
+        JS.SetProperty("FileName",FileName);
+        JS.SetProperty("editdisablecolumns",editdisablecolumns);
+        JS.SetProperty("Adddisablecolumns",Adddisablecolumns);
+        JS.SetProperty("Mustcolumns",Mustcolumns);
+
+        View.SetProperty("table",table);
+        View.SetProperty("displaycolumns",displaycolumns);
+        View.SetProperty("searchcolumns",searchcolumns);
+        View.SetProperty("editcolumns",editcolumns);
+        View.SetProperty("primarykey",primarykey);
+        View.SetProperty("primarykeyNeedWrite",primarykeyNeedWrite);
+        View.SetProperty("FileName",FileName);
+        View.SetProperty("nameSpace",nameSpace);
+        View.SetProperty("title",title);
+
+        var path=FileDirectory+"\\"+FileName;
+        ExistPath(path);
+        GeneratorBatch(Controller,string.Format("{0}\\{1}Controller.cs",path,FileName));
+        GeneratorBatch(View,string.Format("{0}\\Index.cshtml",path));
+        GeneratorBatch(JS,string.Format("{0}\\{1}.js",path,FileName));
+        this.SavePropertiesToXmlFile(string.Format("{0}\\{1}PropertySetting.xml",path,FileName));
+    }
+	catch (Exception ex)
+	{%><%=ex.Message %>
+		
+	<%}
+ %>
+ 
+ <script runat="template">
+public void ExistPath(string path){
+    if (Directory.Exists(path)==false)
+    {
+         Directory.CreateDirectory(path);
+    }
+}
+public void GeneratorBatch(CodeTemplate Template,string filename)
+{
+    Template.RenderToFile(filename,true);
+}
+public void ClearAll(object sender,object args)
+{
+    if (ActiveClear)
+    {
+        displaycolumns.Clear();
+        searchcolumns.Clear();
+        editcolumns.Clear();
+        editdisablecolumns.Clear();
+        Adddisablecolumns.Clear();
+        Mustcolumns.Clear();
+        primarykey="";
+        title="";
+        FileName="";
+    }
+}
+</script>

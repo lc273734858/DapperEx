@@ -1,0 +1,53 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="Text" Debug="False" Description="批量生成实体代码" %>
+<%@ Register Name="BizTemplateDesigner" Template="BizProcessEntityManagerBase.cst" MergeProperties="Flase" ExcludeProperties=""%>
+<%@ Register Name="BizTemplate" Template="BizProcessEntityManager.cst" MergeProperties="Flase" ExcludeProperties=""%>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="SchemaExplorer" %>
+
+<%@ Property Name="SourceDatabase" DeepLoad="True" Optional="False" Category="01. GettingStarted - Required" Description="Database" Type="DatabaseSchema"%>
+<%@ Property Category="2.PropertyInfo" Name="nmameSpace" Type="String" %>
+<%@ Property Category="2.PropertyInfo" Name="entityNameSpace" Type="String" Description="只需要前缀，会自动添加.Entity.Schema名称" %>
+<%@ Property Name="FileDirectory" Type="String" Editor="System.Windows.Forms.Design.FolderNameEditor, System.Design, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"%>
+
+<%
+    CodeTemplate TemplateBase = new BizTemplateDesigner();
+    CodeTemplate Template = new BizTemplate();
+
+    TemplateBase.SetProperty("nmameSpace",nmameSpace);
+    TemplateBase.SetProperty("entityNameSpace",entityNameSpace);
+    ExistPath(FileDirectory+"\\BizProcessBase");
+    ExistPath(FileDirectory+"\\BizProcess");
+
+    var path=FileDirectory+"\\BizProcessBase";
+    GeneratorBatch(TemplateBase,SourceDatabase,path,"\\{0}BizProcessBase.cs");
+
+    Template.SetProperty("nmameSpace",nmameSpace);
+    Template.SetProperty("entityNameSpace",entityNameSpace);
+
+    path=FileDirectory+"\\BizProcess";
+    GeneratorBatch(Template,SourceDatabase,path,"\\{0}BizProcess.cs");
+ %>
+<script runat="template">
+public void ExistPath(string path){
+    if (Directory.Exists(path)==false)
+    {
+         Directory.CreateDirectory(path);
+    }
+}
+public void GeneratorBatch(CodeTemplate Template,DatabaseSchema source,string folder,string fileformat)
+{
+    foreach(TableSchema table in source.Tables){
+        Template.SetProperty("table",table);
+        var path=folder;
+        if(string.IsNullOrEmpty(table.Owner)==false && table.Owner!="dbo")
+        {
+            path+="\\"+table.Owner;
+            ExistPath(path);
+        }
+        path+=string.Format(fileformat,table.Name);
+        Template.RenderToFile(path,true);
+    }
+}
+</script>

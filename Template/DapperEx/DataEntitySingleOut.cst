@@ -1,0 +1,42 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="Text" Debug="False" Description="批量生成实体代码" %>
+<%@ Register Name="EntityTemplate" Template="DataEntity.cst" MergeProperties="Flase" ExcludeProperties=""%>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="SchemaExplorer" %>
+
+<%@ Property Name="SourceDatabase" DeepLoad="True" Optional="False" Category="01. GettingStarted - Required" Description="Database" Type="DatabaseSchema"%>
+<%@ Property Category="2.PropertyInfo" Name="nmameSpace" Type="String" %>
+<%@ Property Name="FileDirectory" Type="String"%>
+
+<%
+    CodeTemplate Template = new EntityTemplate();
+    Template.SetProperty("nmameSpace",nmameSpace);
+    ExistPath(FileDirectory+"\\Designer");
+    ExistPath(FileDirectory+"\\Entity");
+
+    var path=FileDirectory+"\\Designer";
+    GeneratorBatch(Template,SourceDatabase,path,"\\{0}Entity.Designer.cs");
+ %>
+<script runat="template">
+public void ExistPath(string path){
+    if (Directory.Exists(path)==false)
+    {
+         Directory.CreateDirectory(path);
+    }
+}
+public void GeneratorBatch(CodeTemplate Template,DatabaseSchema source,string folder,string fileformat)
+{
+    foreach(TableSchema table in source.Tables){
+        Template.SetProperty("table",table);
+        var path=folder;
+        if(string.IsNullOrEmpty(table.Owner)==false && table.Owner!="dbo")
+        {
+            path+="\\"+table.Owner;
+            ExistPath(path);
+        }
+        path+=string.Format(fileformat,table.Name);
+        Template.RenderToFile(path,true);
+    }
+}
+</script>

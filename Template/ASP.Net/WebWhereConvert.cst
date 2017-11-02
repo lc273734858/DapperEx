@@ -1,0 +1,24 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+<%@ Property Category="1.DataBase" Name="columns" Type="SchemaExplorer.ColumnSchemaCollection"%>
+    #region where
+    WhereObjectList wherelist = new WhereObjectList();
+    if (where != null)
+    {
+        <%foreach (ColumnSchema item in columns)
+    	{  
+        var name=item.Name.ToLower()+"Where";
+        %>
+        WebWhere <%=name%>;
+        if (where.TryGetValue("<%=item.Name%>", out <%=name%>))
+        {
+            wherelist.Add(<%=name%>.FieldName, <%=name%>.Operation, <%=name%>.Value);
+        }
+        <%} %>
+    } 
+    #endregion

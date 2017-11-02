@@ -1,0 +1,171 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+
+<%@ Property Category="1.DataBase" Name="columns" Type="SchemaExplorer.ColumnSchemaCollection"%>
+<%@ Property Category="2.Script" Name="pageName" Optional="True" Type="String" Description="页面名称" %>
+<%@ Property Category="2.Script" Name="nameSpace" Type="String" Optional="True" Description="命名空间" %>
+<%@ Property Category="2.Script" Name="controller" Type="String" Optional="True" Description="控制器" %>
+    
+@{
+    ViewBag.Title = "<%=pageName%>";
+}
+<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Scripts/_SysFrame/pagecss/page.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Scripts/_SysFrame/pagecss/table.css")" rel="stylesheet" />
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="fixed-bar">
+                <div class="item-title">
+                    <h3>店铺审核</h3>
+                    <ul class="tab-base">
+                        <li><a href="@Url.ActionEx("Shop", "ShopCheckIn", "Index")"><span>审核列表</span></a></li>
+                        @*<li><a href="@Url.Content("~/Template/TemplateMaintain/AddTemplate")" class="current"><span>新增模板</span></a></li>*@
+                    </ul>
+                </div>
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal" id="<%=controller%>Query">
+                <%int i=0;
+                try{    
+                    for (; i < columns.Count-1; i+=2)
+                {
+                    ColumnSchema item=columns[i];
+                    ColumnSchema item1=columns[i+1];
+                    var length="";
+                    if (item.SystemType==typeof(string))
+                	{
+                		 length=string.Format("maxlength=\"{0}\"",item.Size);
+                	}
+                    var length1="";
+                    if (item1.SystemType==typeof(string))
+                	{
+                		 length1=string.Format("maxlength=\"{0}\"",item1.Size);
+                	}
+                    
+                %>
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"><%=item.Description%>:</label>
+                        <div class="col-sm-3">
+                            <input name="<%=item.Name%>" id="<%=item.Name%>" type="text" class="form-control" <%=length%> />
+                        </div>
+                        <label class="col-sm-1 control-label"><%=item1.Description%>:</label>
+                        <div class="col-sm-3">
+                            <input name="<%=item1.Name%>" id="<%=item1.Name%>" type="text" class="form-control" <%=length1%> />
+                        </div>
+                    </div>
+                <%}}catch(Exception ex){
+                 %>    <%=ex.Message%>
+                <%}
+                if(i<columns.Count)
+                	{
+                       var item=columns[i];
+                         var length2="";
+                    if (item.SystemType==typeof(string))
+                	{
+                		 length2=string.Format("maxlength=\"{0}\"",item.Size);
+                	}
+                %>
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"><%=item.Description%>:</label>
+                        <div class="col-sm-3">
+                            <input name="<%=item.Name%>" id="<%=item.Name%>" type="text" class="form-control" <%=length2%>" />
+                        </div>
+                    </div>
+                <% 
+                	}
+                %>
+                    <div class="form-group">                    
+                        <div class="col-sm-offset-8 col-sm-4">
+                            <input type="hidden" id="Status" value="pspinbsiness" />
+                            <button type="button" class="btn btn-info" onclick="controller.Query();">查询</button>
+                            <button type="button" class="btn btn-info" onclick="controller.ClearQuery();">清空查询</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!--分组信息-->
+        </section>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+                <div class="adv-table">
+                    <ul class="nav nav-tabs" id="tabs">
+                        <li role="presentation" class="active" data-id="0"><a href="javascript:void(0);">正常</a></li>
+                        <li role="presentation" data-id="99"><a href="javascript:void(0);">禁用</a></li>
+                        <li role="presentation" data-id=""><a href="javascript:void(0);">全部</a></li>
+                    </ul>
+                    <table class="table table-bordered table-hover table-condensed" id="<%=controller%>tb">
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<script type="text/javascript" src="@Url.Content("~/Scripts/_SysFrame/js/jquery.dataTables.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery/jquery.formdeserialize.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery/jquery.formSerialize.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/CustomJs/tabs.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/<%=nameSpace%>/<%=controller%>.js")"></script>
+<script type="text/javascript">
+    var controller = new <%=controller%>({
+        ControllerUrl: '@Url.Content("~/<%=nameSpace%>/<%=controller%>/")',
+        ObjectName: 'controller',
+        PageSize: 10
+    });
+    $(document).ready(function () {       
+        $('#Status').val('');
+        controller.GetTable();
+        $('#tabs').tabs({
+            callback: function (sender) {
+                var status = sender.attr("data-id");
+                $("#Status").val(status);
+                controller.Query();
+            }
+        });
+        $('#<%=controller%>Query').bind('keypress', function (e) {
+            if (e.keyCode == 13) {
+                controller.Query();
+            }
+        });
+    });
+</script>
+
+<script runat="template">
+/// <summary>
+/// 
+/// </summary>
+/// <param name="item"></param>
+/// <returns></returns>
+public string GetPrimayKey(ColumnSchema item)
+{
+    StringBuilder sb=new StringBuilder();
+    if (item.IsPrimaryKeyMember)
+	{
+		 sb.AppendLine("[PrimaryKey]");
+	}
+    sb.AppendLine("[DataMember]");
+    return sb.ToString();
+}
+/// <summary>
+/// 
+/// </summary>
+/// <param name="item"></param>
+/// <returns></returns>
+public string GetSystemType(ColumnSchema item)
+{
+    if (item.SystemType!=typeof(System.String))//&&item.AllowDBNull
+    	return item.SystemType.Name+"?";
+    return item.SystemType.Name;
+}
+</script>

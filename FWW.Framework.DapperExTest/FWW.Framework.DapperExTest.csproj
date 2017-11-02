@@ -58,6 +58,10 @@
     <Compile Include="Entity\BidRecordEntity.designer.cs">
       <DependentUpon>BidRecordEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entity\chatmessageEntity.cs" />
+    <Compile Include="Entity\chatmessageEntity.Designer.cs">
+      <DependentUpon>chatmessageEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entity\PositionTimeDetailEntity.cs" />
     <Compile Include="Entity\PositionTimeDetailEntity.designer.cs">
       <DependentUpon>PositionTimeDetailEntity.cs</DependentUpon>

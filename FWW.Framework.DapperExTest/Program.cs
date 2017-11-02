@@ -22,10 +22,11 @@ namespace FWW.Framework.DapperExTest
             try
             {
                 Context = new DataContext("testDBMySql");
-                GenerateNewTestDbRows(20);
-                var count = Context.From<userinfoEntity>().Count();
-                Console.WriteLine(count);
-                
+                //GenerateNewTestDbRows(20);
+                //var count = Context.From<userinfoEntity>().Count();
+                //Console.WriteLine(count);
+
+                //Context.Update(new userinfoEntity() { UserName = "newusername" }, p => p.UserID == "userid");
                 //QueryTestDB();
                 //var entity = Context.From<BidRecord>(true).Where(BidRecord.F_BidID.In("JJ20160519150324312", "JJ20160519152045218", "JJ20160519153837828")).ToList();
                 //Console.WriteLine("修改前：{0}",entity[0].ProductPrice);
@@ -36,8 +37,8 @@ namespace FWW.Framework.DapperExTest
                 //Console.WriteLine("修改后：{0}",result.ProductPrice);
                 //Context.Delete(new BidRecord() { BidID= "JJ20160519150324312" });
                 //Context.Delete<BidRecordEntity>(p => p.BidID == "JJ20160519165038984");
-                Context.Insert(new BidRecordEntity() { BidID = "JJ20160519165038984", GameID = "b853436cee3c43dfb7221b6c1ffd47be", GameArea = "艾尔之光(月光宝盒)", GameService = "a1015c596cf240ab94866f0ae2f86b96", ProductType = "电信区", ProductID = "25c10a25519549d59834f7db3173e2a1", Status = 1, ProductPrice =101,UserID="1111",UserName="John.liu"});
-
+                //Context.Insert(new BidRecordEntity() { BidID = "JJ20160519165038984", GameID = "b853436cee3c43dfb7221b6c1ffd47be", GameArea = "艾尔之光(月光宝盒)", GameService = "a1015c596cf240ab94866f0ae2f86b96", ProductType = "电信区", ProductID = "25c10a25519549d59834f7db3173e2a1", Status = 1, ProductPrice =101,UserID="1111",UserName="John.liu"});
+                //Context.From<userinfoEntity>().Where(p=>p.UserID.Like("1111")).Page(30, 1);
                 //var list = Context.From<BidRecordEntity>(true).LeftJoin<PositionTimeDetailEntity>((a, b) => a.BidID == b.BidID)
                 //  .Where<PositionTimeDetailEntity>((a, b) => a.BidID == "JJ20160523100851278" && b.BidTimeID == "446c69b1-9c7f-4c69-a42e-55f26103bafc")
                 //    .Select()
@@ -76,6 +77,9 @@ namespace FWW.Framework.DapperExTest
                 //    }
                 //}
                 //Context.From<TestTableEntity>().LeftJoin<>
+                var user=Context.From<ChatMessage.Entity.chatmessageEntity>().Where(p => p.UserID.Like("0692")).First();
+                Console.WriteLine(user.UserID);
+                Console.WriteLine(Context.LastSqlExpress);
             }
             catch (Exception ex)
             {

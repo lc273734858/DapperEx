@@ -1,0 +1,166 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+
+<%@ Property Category="1.DataBase" Name="table" Type="SchemaExplorer.TableSchema" Editor=""%>
+<%@ Property Category="2.PropertyInfo" Name="nmameSpace" Type="String" %>
+<%@ Property Category="2.PropertyInfo" Name="entityNameSpace" Type="String" %>
+<%
+    string tablename=string.Format("[{0}].[{1}]",table.Owner,table.Name);
+    var prkey=table.PrimaryKey.MemberColumns[0];
+    string keytype="int";     
+    if(prkey.SystemType.Equals(typeof(string)))
+    {
+        keytype="string";
+    }
+%>
+using FWW.Framework.DataOperation.Dapper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using <%=entityNameSpace%>.Entity.<%=table.Owner %>;
+
+namespace <%=nmameSpace%>.<%=table.Owner %>
+{
+    public abstract class <%=table.Name %>BizProcessBase
+    {
+        #region Constructor
+        public EntityManager manager{get;set;}
+        protected string _userid;
+        public <%=table.Name %>BizProcessBase(string userid)
+        {
+            _userid = userid;
+            manager = new EntityManager();
+        }
+        public <%=table.Name %>BizProcessBase(string userid,EntityManager ma)
+        {
+            _userid = userid;
+            manager = ma;
+        }
+        #endregion
+        
+        #region Method        
+        /// <summary>
+        /// 根据主键获取数据
+        /// </summary>
+        /// <param name="<%=prkey.Name.ToLower()%>"><%=prkey.Description%></param>
+        /// <returns></returns>
+        public virtual <%=table.Name %>Entity GetByID(<%=keytype%> <%=prkey.Name.ToLower()%>,string displayfields="")
+        {
+            
+            <%=table.Name %>Entity entity = new <%=table.Name %>Entity() { <%=prkey.Name%>=<%=prkey.Name.ToLower()%>};
+            if (manager.TryGetDataByPrimaryKey(ref entity,displayfields))
+            {
+                return entity;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        /// <summary>
+        /// 分页列表
+        /// </summary>
+        /// <param name="where">The where.</param>
+        /// <param name="orderBy">The order by.</param>
+        /// <param name="pageNum">The page number.</param>
+        /// <param name="pageCount">The page count.</param>
+        /// <returns>PageResult{ProductEntity}.</returns>
+        public PageResult<<%=table.Name %>Entity> GetPageList(WhereObjectList where,string fields, string orderBy, int pageNum, int pageCount)
+        {
+            return manager.GetDataByPageHasTotal<<%=table.Name %>Entity>(fields, orderBy, pageNum, pageCount,where);
+        }        
+        /// <summary>
+        /// 根据主键删除数据
+        /// </summary>
+        /// <param name="<%=prkey.Name.ToLower()%>"><%=prkey.Description%></param>
+        /// <returns></returns>
+        public virtual int DeleteByID(<%=keytype%> <%=prkey.Name.ToLower()%>)
+        {
+            <%=table.Name %>Entity entity = new <%=table.Name %>Entity() { <%=prkey.Name%>=<%=prkey.Name.ToLower()%>};
+            return manager.DeleteByPrimaryKey(entity);
+        }
+        public virtual IEnumerable<<%=table.Name %>Entity> QueryData(WhereObjectList where,string displayfields="", string sort = "", int count = 0)
+        {
+            return manager.Query<<%=table.Name %>Entity>(where, displayfields, sort, count);
+        }
+        <%
+        if (Contains(table,"Status"))
+    	{%>
+        /// <summary>
+        /// 更新数据状态
+        /// </summary>
+        /// <param name="<%=prkey.Name.ToLower()%>"><%=prkey.Description%></param>
+        /// <param name="status">0-创建，99-删除</param>
+        public virtual void UpdateStatus(<%=keytype%> <%=prkey.Name.ToLower()%>, byte status)
+        {
+            UpdateByPrimaryKey(new <%=table.Name %>Entity() { <%=prkey.Name%> = <%=prkey.Name.ToLower()%>, Status = status});
+        }
+        <%}%>
+        <%
+        if (Contains(table,"FlowStatus"))
+    	{
+        var col=table.Columns.Find(p=>p.Name.Equals("FlowStatus",StringComparison.OrdinalIgnoreCase));
+        %>
+        /// <summary>
+        /// 更新流程状态
+        /// </summary>
+        /// <param name="id"><%=prkey.Description%></param>
+        /// <param name="status"><%=col.Description%></param>
+        public virtual void UpdateFlowStatus(<%=keytype%> id, byte status)
+        {
+            UpdateByPrimaryKey(new <%=table.Name %>Entity() { <%=prkey.Name%> = id, FlowStatus = status });
+        }
+        <%}%>
+        public virtual void UpdateByPrimaryKey(<%=table.Name %>Entity entity)
+        {
+            <%if (Contains(table,"ModifiedDate")){%>
+            entity.ModifiedDate = DateTime.Now;
+            entity.Modifier = _userid;
+            <%} %>
+            manager.UpdateByPrimaryKey(entity);
+        }
+        public virtual void Insert(<%=table.Name %>Entity entity)
+        {
+        <%if (Contains(table,"Creator")){%>
+            entity.Creator = _userid;
+            entity.CreationDate=DateTime.Now;
+        <%} %>
+            manager.Insert(entity);
+        }
+        /// <summary>
+        /// 根据主键判断是否存在
+        /// </summary>
+        /// <param name="<%=prkey.Name.ToLower()%>"><%=prkey.Description%></param>
+        /// <returns></returns>
+        public virtual bool ContainsBy(<%=keytype%> <%=prkey.Name.ToLower()%>)
+        {
+            return manager.Contains(new <%=table.Name %>Entity() {<%=prkey.Name%> = <%=prkey.Name.ToLower()%>});
+        }
+         #endregion
+    }
+}
+<script runat="template">
+public string GetModiferString(SchemaExplorer.TableSchema table)
+{
+    System.Text.StringBuilder sb=new System.Text.StringBuilder();
+    if (Contains(table,"Modifier"))
+	{
+	    return ", Modifier = _userid, ModifiedDate = DateTime.Now";
+	}
+    else
+        return "";
+}
+public bool Contains(SchemaExplorer.TableSchema table,string columnName)
+{
+    return table.Columns.Exists(p=>p.Name==columnName);
+}
+</script>

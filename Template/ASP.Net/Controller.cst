@@ -1,0 +1,123 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+
+<%@ Property Category="1.DataBase" Name="table" Type="SchemaExplorer.TableSchema"%>
+<%@ Property Category="1.DataBase" Name="columns" Type="SchemaExplorer.ColumnSchemaCollection"%>
+<%@ Property Category="2.Script" Name="nameSpace" Type="String" Optional="True" Description="命名空间" %>
+<%@ Property Category="2.Script" Name="controller" Type="String" Optional="True" Description="控制器" %>
+
+using FWW.Framework.Common.ErrorHandling;
+using FWW.Framework.DataOperation.Dapper;
+using TH.WebMVC;
+using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
+
+namespace <%=nameSpace %>
+{
+    public class <%=controller%>Controller : BaseGridController
+    {
+        private static List<string> displayfields = new List<string> { <%=GetSortFields(columns)%> };
+        public ActionResult Index()
+        {
+            return View();
+        }
+        public override JsonResult GetPageData(int iDisplayStart, int iDisplayLength, string where, int iSortCol_0 = 0, string sSortDir_0 = "")
+        {
+            var result = new BaseJqueryTableResult();
+            try
+            {
+                WebWhereList wherelist = null;
+                if (where.Length > 2)
+                {
+                    wherelist = new WebWhereList(WebHelper.Deserialize<List<WebWhere>>(where));
+                }
+                int pageIndex = WebHelper.GetPageIdex(iDisplayStart, iDisplayLength);
+                result.iDisplayStart = iDisplayStart;
+                GetPageDataResult(pageIndex, iDisplayLength, wherelist, iSortCol_0, sSortDir_0, result);
+            }
+            catch (FriendlyException fe)
+            {
+                result.Status = -1;
+                result.Message = fe.Message;
+            }
+            catch (Exception ex)
+            {
+                result.Status = -2;
+                LogHelper.WriteLog(ex);
+            }
+            return Json(result);
+        }
+        protected void GetPageDataResult(int pagenum, int pagecount, WebWhereList where, int sortindex, string sortdir, BaseJqueryTableResult result)
+        {
+            WhereObjectList wherelist = new WhereObjectList();
+            #region where
+            if (where != null)
+            {
+                <%foreach (ColumnSchema item in columns)
+            	{
+                    var name=item.Name.ToLower()+"Where";
+                    var fieldName=item.Name;
+                %>
+                //<%=item.Description %>
+                WebWhere <%=name%>;
+                if (where.TryGetValue("<%=fieldName%>", out <%=name%>))
+                {
+                    <%if (item.SystemType==typeof(string))
+                	{%>
+                    wherelist.Add("<%=fieldName%>", WhereOperation.Like, <%=name%>.ConvertToLike());
+                    <%} 
+                    else if (item.SystemType==typeof(int)){
+                    %>
+                    wherelist.Add("<%=fieldName%>", <%=name%>.O, <%=name%>.ConvertToInt(string.Format("<%=item.Description%>填写错误，请输入正确的小于{0}整数",int.MaxValue)));
+                    <%}else if(item.SystemType==typeof(decimal)){%>
+                    wherelist.Add("<%=fieldName%>", <%=name%>.O, <%=name%>.ConvertToInt(string.Format("<%=item.Description%>填写错误，请输入正确的小于{0}的数字",decimal.MaxValue)));
+                    <%}%>
+                }
+                <%} %>
+            } 
+            #endregion
+            if (sortindex != 0)
+            {
+                sortdir = WebHelper.GetSortString(displayfields, sortindex, sortdir);
+            }
+            else
+            {
+                sortdir = "CreationDate desc";
+            }
+            EntityManager manager = new EntityManager();
+            var p = new SqlDataParamter();
+            var wherestr=SqlGenerator.BuildWhereByWhereList(ref p, wherelist);
+            result.iTotalDisplayRecords = manager.Count<<%=table.Name%>>(wherestr, p);
+            result.aaData=manager.GetDataByPage<<%=table.Name%>>("<%=GetDisplayFields(columns)%>", sortdir, pagenum, pagecount, wherestr, p);
+        }
+    }    
+}
+<script runat="template">
+public string GetSortFields(ColumnSchemaCollection items)
+{
+    StringBuilder sb=new StringBuilder();   
+    sb.Append("\"\",");
+    foreach (ColumnSchema item in items)
+	{
+		 sb.AppendFormat("{0}.F_{1},",table.Name,item.Name);
+	}
+    return sb.ToString().TrimEnd(',');
+}
+public string GetDisplayFields(ColumnSchemaCollection items)
+{
+    StringBuilder sb=new StringBuilder();   
+    foreach (ColumnSchema item in items)
+	{
+		 sb.AppendFormat("{0},",item.Name);
+	}
+    return sb.ToString().TrimEnd(',');
+}
+</script> 

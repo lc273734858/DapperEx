@@ -1,0 +1,131 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+<%@ Import Namespace="System.Text.RegularExpressions" %>
+<%@ Import Namespace="System.Text" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Property Category="1.Name" Name="nameSpace" Type="String" Optional="True" Description="命名空间" %>
+<%@ Property Category="1.Name" Name="entityName" Type="String" Optional="True" Description="实体名称" %>
+<%@ Property Name="SourceDatabase" DeepLoad="True" Optional="False" Category="2.数据库" Description="Database" Type="DatabaseSchema"%>
+<%@ Property Category="3.Script" Name="SqlString" Type="String" Optional="True" Description="查询字符串,不需要Select" %>
+<%
+    string sql=SqlString.Replace(Environment.NewLine,"");
+    int index=sql.ToLower().IndexOf("from");
+
+    string tablesql=sql.Substring(index+4,sql.Length-index-4);
+    string fieldstr=sql.Substring(0,index);
+    var fields=fieldstr.Split(new char[]{','});
+    
+    Dictionary<string, string> tablemapping = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    Dictionary<string, TableSchema> tableSchema= new Dictionary<string, TableSchema>(StringComparer.OrdinalIgnoreCase);
+
+    index=tablesql.IndexOf("join");
+    var firststring = tablesql.ToLower().Substring(0,index).Trim();
+    var endstring=tablesql.ToLower().Substring(index,tablesql.Length-index).Trim();
+
+    Regex firstregex = new Regex(@"(\S*)\s(\S*)");
+    if (firstregex.IsMatch(firststring))
+    {
+        var match = firstregex.Match(firststring);
+        var tablename = match.Groups[1].Value;
+        var asname = match.Groups[2].Value;
+        tablemapping.Add(asname, tablename);
+    }
+
+    Regex regex = new Regex(@"join\s*(\S*)\s*(\S*)");
+    foreach (Match item in regex.Matches(endstring))
+    {
+        var match = item;
+        var tablename = match.Groups[1].Value;
+        var asname = match.Groups[2].Value;
+        if (asname == "as")
+        {
+            var regexas = new Regex(@"join\s*(\S*)\s*as\s*(\S*)");
+            match=regexas.Match(endstring);
+            asname = match.Groups[2].Value;
+        }
+        tablemapping.Add(asname, tablename);
+     }
+    foreach (var item in tablemapping)
+	{
+		var tablename=item.Value.Replace("[","").Replace("]","");
+        index=tablename.IndexOf(".");
+        var schema="dbo";
+        if (index>0)
+    	{
+    		 schema=tablename.Substring(0,index);
+             tablename=tablename.Substring(index+1,tablename.Length-index-1);
+    	}
+    	var tableinfo=SourceDatabase.Tables.Find(p=>p.Name.ToLower()==tablename && p.Owner.ToLower()==schema);
+        tableSchema.Add(item.Key,tableinfo);
+	}   
+%>
+using System;
+using System.Runtime.Serialization;
+using FWW.Framework.DataOperation.Dapper;
+
+namespace <%=nameSpace %>
+{
+    /*
+    select <%=SqlString%>
+    */
+    ///<summary>
+    ///
+    ///</summary>
+    [Table(Name = "<%=tablesql%>")]
+    public class <%=entityName %>
+    {
+        <%  
+            bool first=true;
+             foreach (string item in fields)
+        	{
+                var itemstr=item.Trim();
+                index=itemstr.IndexOf(".");
+                string field=item;
+                string filetype="String";
+                string tableas="";
+                string des=itemstr;
+        		if (index>0)
+            	{
+            		field=itemstr.Substring(index+1,itemstr.Length-index-1);
+                    field=field.Replace("[","").Replace("]","");
+                    tableas=itemstr.Substring(0,index); 
+                    TableSchema tableinfo;
+                    if (tableSchema.TryGetValue(tableas,out tableinfo))
+                	{
+                        var col=tableinfo.Columns.Find(p=>p.Name.ToLower()==field.ToLower());
+                        if (col!=null)
+                    	{
+                            filetype=GetSystemType(col);
+                            des=col.Description;
+                    	}
+                	}
+            	}
+                field=field.Replace("[","").Replace("]","");
+                %>   
+         #region <%=string.IsNullOrEmpty(des)?field:des %>
+         public const string F_<%=field%> = "<%=itemstr%>";
+        /// <summary>
+        /// <%=des%>
+        /// </summary>
+         <%if(first){
+             first=false;
+         %>
+         [PrimaryKey]
+         <%}%>
+         [Column(Name="<%=itemstr%>")]
+         [DataMember]
+         public <%=filetype%> <%=field%>{get;set;}
+         #endregion
+         
+        	<%} %>
+    }
+}
+<script runat="template">
+public string GetSystemType(ColumnSchema item)
+{
+    if (item.SystemType!=typeof(System.String))//&&item.AllowDBNull
+    	return item.SystemType.Name+"?";
+    return item.SystemType.Name;
+}
+</script>

@@ -1,0 +1,17 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="Text" Debug="False" Description="批量生成实体代码" %>
+
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="SchemaExplorer" %>
+
+<%@ Property Name="SourceDatabase" DeepLoad="True" Optional="False" Category="01. GettingStarted - Required" Description="Database" Type="DatabaseSchema"%>
+
+
+<%
+    foreach(TableSchema table in SourceDatabase.Tables){
+        %>
+        <%=table.Owner+"."+table.Name%>
+        <%
+    }
+ %>

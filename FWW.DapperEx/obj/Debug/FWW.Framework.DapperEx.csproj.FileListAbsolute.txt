@@ -32,3 +32,10 @@ F:\workfolder\projects\dapperEx\FWW.DapperEx\bin\Debug\FWW.Framework.Utility.xml
 F:\workfolder\projects\dapperEx\FWW.DapperEx\obj\Debug\FWW.Framework.DapperEx.csprojResolveAssemblyReference.cache
 F:\workfolder\projects\dapperEx\FWW.DapperEx\obj\Debug\FWW.Framework.DapperEx.dll
 F:\workfolder\projects\dapperEx\FWW.DapperEx\obj\Debug\FWW.Framework.DapperEx.pdb
+F:\netcore\DapperEx1\FWW.DapperEx\bin\Debug\FWW.Framework.DapperEx.xml
+F:\netcore\DapperEx1\FWW.DapperEx\bin\Debug\FWW.Framework.DapperEx.dll
+F:\netcore\DapperEx1\FWW.DapperEx\bin\Debug\FWW.Framework.DapperEx.pdb
+F:\netcore\DapperEx1\FWW.DapperEx\obj\Debug\FWW.Framework.DapperEx.csprojResolveAssemblyReference.cache
+F:\netcore\DapperEx1\FWW.DapperEx\obj\Debug\FWW.Framework.DapperEx.csproj.CoreCompileInputs.cache
+F:\netcore\DapperEx1\FWW.DapperEx\obj\Debug\FWW.Framework.DapperEx.dll
+F:\netcore\DapperEx1\FWW.DapperEx\obj\Debug\FWW.Framework.DapperEx.pdb

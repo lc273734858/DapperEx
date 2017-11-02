@@ -1,0 +1,58 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+
+<%@ Property Category="1.DataBase" Name="table" Type="SchemaExplorer.TableSchema" Editor=""%>
+<%@ Property Category="2.PropertyInfo" Name="nmameSpace" Type="String" %>
+<%@ Property Category="2.PropertyInfo" Name="entityNameSpace" Type="String" %>
+<%
+    string tablename=string.Format("[{0}].[{1}]",table.Owner,table.Name);
+    var prkey=table.PrimaryKey.MemberColumns[0];
+    string keytype="int";     
+    if(prkey.SystemType.Equals(typeof(string)))
+    {
+        keytype="string";
+    }
+%>
+using FWW.Framework.DataOperation.Dapper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using <%=entityNameSpace%>.Entity.<%=table.Owner %>;
+
+namespace <%=nmameSpace%>.<%=table.Owner %>
+{
+    public class <%=table.Name %>BizProcess:<%=table.Name %>BizProcessBase
+    {
+        #region Constructor
+        public <%=table.Name %>BizProcess(string userid):base(userid)
+        {
+        }
+        public <%=table.Name %>BizProcess(string userid,EntityManager ma): base(userid, ma)
+        {
+        }
+        #endregion
+        #region Select
+        #endregion
+        #region Insert
+
+        #endregion
+        #region Update
+
+        #endregion
+        #region Contains
+        
+        #endregion
+        #region Other
+
+        #endregion
+    }
+}

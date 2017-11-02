@@ -1,0 +1,23 @@
+﻿<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ Import Namespace="CodeSmith.Engine.Schema"  %>
+
+<%@ Template Language="C#" TargetLanguage="Text" %>
+<%@ Property Name="SampleStringProperty" Default="SomeValue" Type="System.String" %>
+<%@ Property Name="SampleBooleanProperty" Default="True" Type="System.Boolean" %>
+My static content here.
+My dynamic content here: "<%= SampleStringProperty %>"
+Call a script method: <%= SampleMethod() %>
+<% if (SampleBooleanProperty) { %>
+My conditional content here.
+<% } %>
+<script runat="template">
+// My methods here.
+public string SampleMethod()
+{
+  return "Method output.";
+}
+</script>

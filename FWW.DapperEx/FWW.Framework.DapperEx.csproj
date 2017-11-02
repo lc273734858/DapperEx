@@ -41,6 +41,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Release\FWW.Framework.DapperEx.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FWW.Framework.Common">
@@ -66,6 +67,7 @@
     <Compile Include="LamdaExpress\Common\EntityUtils.cs" />
     <Compile Include="LamdaExpress\Common\EnumHelper.cs" />
     <Compile Include="LamdaExpress\Common\Field.cs" />
+    <Compile Include="LamdaExpress\Common\FieldExtend.cs" />
     <Compile Include="LamdaExpress\Common\ILogable.cs" />
     <Compile Include="LamdaExpress\Common\SerializationManager.cs" />
     <Compile Include="LamdaExpress\Database.cs" />

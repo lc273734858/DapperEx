@@ -1,0 +1,343 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+
+<%@ Property Category="1.DataBase" Name="table" Type="SchemaExplorer.TableSchema"%>
+<%@ Property Category="1.DataBase" Name="displaycolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="显示字段"%>
+<%@ Property Category="1.DataBase" Name="searchcolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="查询字段"%>
+<%@ Property Category="1.DataBase" Name="editcolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="编辑字段"%>
+<%@ Property Category="1.DataBase" Name="primarykey" Type="String" Description="主键"%>
+<%@ Property Category="1.DataBase" Name="primarykeyNeedWrite" Type="Boolean" Description="新增时主键是否需要填写" Default="false"%>
+
+<%@ Property Category="2.Script" Name="FileName" Type="String" Optional="True" Description="文件名称" %>
+<%@ Property Category="2.Script" Name="nameSpace" Type="String" Optional="True" Description="命名空间" %>
+using FWW.Framework.Common.ErrorHandling;
+using FWW.Framework.DataOperation.Dapper;
+using TH.WebMVC;
+using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
+<%
+    var prkey=table.PrimaryKey.MemberColumns[0];
+    string keytype="int";     
+    if(prkey.SystemType.Equals(typeof(string)))
+    {
+        keytype="string";
+    }
+    var lowprimarykey=primarykey.ToLower();
+%>
+namespace <%=nameSpace %>
+{
+    public class <%=FileName%>Controller : BaseGridController
+    {
+        private static List<string> displayfields = new List<string> { <%=GetSortFields(displaycolumns)%> };
+        public ActionResult Index()
+        {
+            return View();
+        }
+        public override JsonResult GetPageData(int iDisplayStart, int iDisplayLength, string where, int iSortCol_0 = 0, string sSortDir_0 = "")
+        {
+            var result = new BaseJqueryTableResult();
+            try
+            {
+                WebWhereList wherelist = null;
+                if (where.Length > 2)
+                {
+                    wherelist = new WebWhereList(WebHelper.Deserialize<List<WebWhere>>(where));
+                }
+                int pageIndex = WebHelper.GetPageIdex(iDisplayStart, iDisplayLength);
+                result.iDisplayStart = iDisplayStart;
+                GetPageDataResult(pageIndex, iDisplayLength, wherelist, iSortCol_0, sSortDir_0, result);
+            }
+            catch (FriendlyException fe)
+            {
+                result.Status = -1;
+                result.Message = fe.Message;
+            }
+            catch (Exception ex)
+            {
+                result.Status = -2;
+                LogHelper.WriteLog(ex);
+            }
+            return Json(result);
+        }
+        protected void GetPageDataResult(int pagenum, int pagecount, WebWhereList where, int sortindex, string sortdir, BaseJqueryTableResult result)
+        {
+            WhereObjectList wherelist = new WhereObjectList();
+            #region where
+            if (where != null)
+            {
+                <%foreach (ColumnSchema item in searchcolumns)
+            	{
+                    var name=item.Name.ToLower()+"Where";
+                    var fieldName=item.Name;
+                %>
+                //<%=item.Description %>
+                WebWhere <%=name%>;
+                if (where.TryGetValue("<%=fieldName%>", out <%=name%>))
+                {
+                    <%if (item.SystemType==typeof(string))
+                	{%>
+                    wherelist.Add("<%=fieldName%>", WhereOperation.Like, <%=name%>.ConvertToLike());
+                    <%} 
+                    else if (item.SystemType==typeof(int)){
+                    %>
+                    wherelist.Add("<%=fieldName%>", <%=name%>.O, <%=name%>.ConvertToInt(string.Format("<%=item.Description%>填写错误，请输入正确的小于{0}整数",int.MaxValue)));
+                    <%}else if(item.SystemType==typeof(decimal)){%>
+                    wherelist.Add("<%=fieldName%>", <%=name%>.O, <%=name%>.ConvertToInt(string.Format("<%=item.Description%>填写错误，请输入正确的小于{0}的数字",decimal.MaxValue)));
+                    <%}%>
+                }
+                <%}%>
+                <%if (table.Columns.Exists(p=>p.Name.Equals("Status"))){%>
+                    WebWhere statusWhere;
+                    if (where.TryGetValue("Status", out statusWhere))
+                    {
+                        wherelist.Add("Status", WhereOperation.Equal, statusWhere.V);
+                    }
+            	<%}%>
+            } 
+            #endregion
+            if (sortindex != 0)
+            {
+                sortdir = WebHelper.GetSortString(displayfields, sortindex, sortdir);
+            }
+            else
+            {
+                sortdir = "CreationDate desc";
+            }
+            <%=table.Name%>BizProcess biz = new <%=table.Name%>BizProcess(UserID);
+            var pageresult = biz.manager.GetDataByPageHasTotal<<%=table.Name%>Entity>("<%=GetDisplayFields(table.Columns)%>", sortdir, pagenum, pagecount, wherelist);
+            result.iTotalDisplayRecords = pageresult.total;
+            result.aaData = pageresult.datas;
+        }
+        public JsonResult GetDataByID(<%=keytype%> <%=lowprimarykey%>)
+        {
+            var result = new BasePageResult();
+            try
+            {
+                <%=table.Name%>BizProcess biz = new <%=table.Name%>BizProcess(UserID);
+                var entity = biz.GetByID(<%=lowprimarykey%>);
+                if (entity == null)
+                {
+                    throw new FriendlyException(string.Format("不存在主键为[{0}]的数据!",<%=lowprimarykey%>));
+                }
+                result.Data = entity;
+            }
+            catch (FriendlyException fe)
+            {
+                result.Status = -1;
+                result.Message = fe.Message;
+            }
+            catch (Exception ex)
+            {
+                result.Status = -2;
+                result.WriteLog(ex);
+            }
+            return Json(result);
+        }   
+        /// <summary>
+        /// 保存编辑数据
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <returns>JsonResult.</returns>
+        public JsonResult SaveEdit(string source)
+        {
+            var result = new BasePageResult();
+            <%=table.Name%>Entity model = null;
+            <%=table.Name%>BizProcess biz = new <%=table.Name%>BizProcess(UserID);
+            try
+            {
+                model = WebHelper.Deserialize<<%=table.Name%>Entity>(source);
+                if (string.IsNullOrEmpty(model.<%=primarykey%>))
+                {
+                    throw new FriendlyException("参数编号必须输入");
+                }
+                biz.UpdateByPrimaryKey(model);
+            }
+            catch (FriendlyException fe)
+            {
+                result.Status = -1;
+                result.Message = fe.Message;
+            }
+            catch (Exception ex)
+            {
+                result.Status = -1;
+                if (model != null)
+                {
+                    result.WriteLog(ex);
+                    result.WriteLog(new Exception(model.ToString(), ex));
+                }
+                else
+                {
+                    result.WriteLog(ex);
+                }
+            }
+            return Json(result);
+        }
+        /// <summary>
+        /// 保存新增数据
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <returns>JsonResult.</returns>
+        public JsonResult SaveAdd(string source)
+        {
+            var result = new BasePageResult();
+            <%=table.Name%>Entity model = null;
+            <%=table.Name%>BizProcess biz = new <%=table.Name%>BizProcess(UserID);
+            try
+            {
+                model = WebHelper.Deserialize<<%=table.Name%>Entity>(source);
+                <%if (primarykeyNeedWrite)
+                	{%>
+                if (string.IsNullOrEmpty(model.<%=primarykey%>))
+                {
+                    throw new FriendlyException("主键必须输入");
+                }	 
+                <%} %>
+                biz.Insert(model);
+            }
+            catch (FriendlyException fe)
+            {
+                result.Status = -1;
+                result.Message = fe.Message;
+            }
+            catch (Exception ex)
+            {
+                result.Status = -1;
+                if (model != null)
+                {
+                    result.WriteLog(ex);
+                    result.WriteLog(new Exception(model.ToString(), ex));
+                }
+                else
+                {
+                    result.WriteLog(ex);
+                }
+            }
+            return Json(result);
+        }
+        /// <summary>
+        /// 彻底删除数据
+        /// </summary>
+        /// <param name="actionid">The actionid.</param>
+        /// <returns>BasePageResult</returns>
+        public JsonResult DeleteByID(<%=keytype%> <%=lowprimarykey%>)
+        {
+            var result = new BasePageResult();
+            try
+            {
+                <%=table.Name%>BizProcess biz = new <%=table.Name%>BizProcess(UserID);
+                if (biz.ContainsBy(<%=lowprimarykey%>))
+                {
+                    biz.DeleteByID(<%=lowprimarykey%>);
+                }
+                else
+                {
+                    throw new FriendlyException(string.Format("不存在主键为[{0}]的数据!",<%=lowprimarykey%>));
+                }
+            }
+            catch (FriendlyException fe)
+            {
+                result.Status = -1;
+                result.Message = fe.Message;
+            }
+            catch (Exception ex)
+            {
+                result.Status = -2;
+                result.WriteLog(ex);
+            }
+            return Json(result);
+        }
+        /// <summary>
+        /// 标记数据为删除状态
+        /// </summary>
+        /// <param name="actionid">The actionid.</param>
+        /// <returns>BasePageResult</returns>
+        public JsonResult DeleteSoft(<%=keytype%> <%=lowprimarykey%>)
+        {
+            var result = new BasePageResult();
+            try
+            {
+                <%=table.Name%>BizProcess biz = new <%=table.Name%>BizProcess(UserID);
+                if (biz.ContainsBy(<%=lowprimarykey%>))
+                {
+                    biz.UpdateStatus(<%=lowprimarykey%>, 99);
+                }
+                else
+                {
+                    throw new FriendlyException(string.Format("不存在主键为[{0}]的数据!",<%=lowprimarykey%>));
+                }
+            }
+            catch (FriendlyException fe)
+            {
+                result.Status = -1;
+                result.Message = fe.Message;
+            }
+            catch (Exception ex)
+            {
+                result.Status = -2;
+                result.WriteLog(ex);
+            }
+            return Json(result);
+        }        
+        /// <summary>
+        /// 恢复数据
+        /// </summary>
+        /// <param name="actionid">The actionid.</param>
+        /// <returns>BasePageResult</returns>
+        public JsonResult ReActiveID(<%=keytype%> <%=lowprimarykey%>)
+        {
+            var result = new BasePageResult();
+            try
+            {
+                <%=table.Name%>BizProcess biz = new <%=table.Name%>BizProcess(UserID);
+                if (biz.ContainsBy(<%=lowprimarykey%>))
+                {
+                    biz.UpdateStatus(<%=lowprimarykey%>, 0);
+                }
+                else
+                {
+                    throw new FriendlyException(string.Format("不存在主键为[{0}]的数据!",<%=lowprimarykey%>));
+                }
+            }
+            catch (FriendlyException fe)
+            {
+                result.Status = -1;
+                result.Message = fe.Message;
+            }
+            catch (Exception ex)
+            {
+                result.Status = -2;
+                result.WriteLog(ex);
+            }
+            return Json(result);
+        }
+    }    
+}
+<script runat="template">
+public string GetSortFields(ColumnSchemaCollection items)
+{
+    StringBuilder sb=new StringBuilder();   
+    sb.Append("\"\",");
+    foreach (ColumnSchema item in items)
+	{
+		 sb.AppendFormat("\"{0}\",",item.Name);
+	}
+    return sb.ToString().TrimEnd(',');
+}
+public string GetDisplayFields(ColumnSchemaCollection items)
+{
+    StringBuilder sb=new StringBuilder();   
+    foreach (ColumnSchema item in items)
+	{
+		 sb.AppendFormat("{0},",item.Name);
+	}
+    return sb.ToString().TrimEnd(',');
+}
+</script> 

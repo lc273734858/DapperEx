@@ -1,0 +1,34 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+<%@ Property Category="1.PropertyInfo" Name="FieldString" Type="String" %>
+<%
+var fields=FieldString.Split(new char[]{','});
+%>
+
+#region where
+WhereObjectList wherelist = new WhereObjectList();
+if (where != null)
+{
+    <%foreach (string field in fields)
+	{  
+        var name=field.Replace(".","").ToLower()+"Where";
+        var viewName=field;
+        var index=field.IndexOf(".");
+        if (index>=0)
+        	{
+        		 viewName=field.Substring(index+1,field.Length-index-1);
+        	}
+    %>
+    WebWhere <%=name%>;
+    if (where.TryGetValue("<%=viewName%>", out <%=name%>))
+    {
+        wherelist.Add("<%=field%>", WhereOperation.Like, <%=name%>.ConvertToLike());
+    }
+    <%} %>
+} 
+#endregion

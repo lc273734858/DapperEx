@@ -1,0 +1,64 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+<%@ Assembly Name="Dapper" Path="..\bin" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="Dapper" %>
+
+<%@ Property Category="1.PropertyInfo" Name="FixType" Type="String" %>
+
+<%
+try 
+	{	        
+    System.Data.SqlClient.SqlConnection conn=new System.Data.SqlClient.SqlConnection(@"Data Source=192.168.22.14;Initial Catalog=Recruit;UID=sa;PWD=321#@!ewq;");
+    string allSql="SELECT FixType FROM [Recruit].[Plate].[FixValue] group by FixType";
+    var fixtypes=conn.Query(allSql,null);
+        
+    foreach (var fix in fixtypes)
+	{
+        FixType=fix["FixType"].ToString();
+        string sql="select Value,Name from [Plate].[FixValue] where FixType='"+FixType+"'";
+        var result=conn.Query(sql,null);
+        var list=result.AsList();
+        var firstvalue=list[0]["Value"].ToString();
+        bool HaveQuotes;
+        if (firstvalue.Length>1&&firstvalue.IndexOf("0")==0)
+    	{
+    		 HaveQuotes=true;
+    	}
+        else
+        {
+            HaveQuotes=false;
+        }
+%>
+
+function Get<%=FixType%>(value)
+{
+    var name = '';
+    switch (value) {
+    <%
+    foreach (var item in result)
+	{
+        string value=item["Value"].ToString();
+        if (HaveQuotes)
+    	{
+    		 value=string.Format("'{0}'",value);
+    	}
+        string name=item["Name"].ToString();
+    %>
+        case <%=value%>:
+            name='<%=name %>';
+            break;
+	<%} %>           
+        default:
+            break;
+    }
+    return name;
+}
+<%}}
+	catch (Exception ex)
+	{
+		%>
+        <%=ex.Message %>
+        <%
+	} %>

@@ -1,0 +1,16 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+<%@ Assembly Name="Dapper" Path="E:\Tool\CodeSmith\v7.0\AddIns" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="Dapper" %>
+
+<%@ Property Category="1.PropertyInfo" Name="FixType" Type="String" %>
+<%@ Property Category="1.PropertyInfo" Name="HaveQuotes" Type="Boolean" Default="false" %>
+
+<%        
+    System.Data.SqlClient.SqlConnection conn=new System.Data.SqlClient.SqlConnection(@"Data Source=192.168.22.14;Initial Catalog=Recruit;UID=sa;PWD=321#@!ewq;");
+    string sql="select Value,name from [Plate].[FixValue] where FixType='"+FixType+"'";
+    
+%>
+gdfsgdfgdfgdfg

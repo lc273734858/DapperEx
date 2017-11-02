@@ -15,3 +15,9 @@ F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\FWW.Framework.Utility.xml
 F:\workfolder\projects\My\ORM\FWW.DapperEx\obj\Release\FWW.Framework.DapperEx.dll
 F:\workfolder\projects\My\ORM\FWW.DapperEx\obj\Release\FWW.Framework.DapperEx.pdb
 F:\workfolder\projects\My\ORM\FWW.DapperEx\obj\Release\FWW.Framework.DapperEx.csprojResolveAssemblyReference.cache
+F:\netcore\DapperEx1\FWW.DapperEx\bin\Release\FWW.Framework.DapperEx.dll
+F:\netcore\DapperEx1\FWW.DapperEx\bin\Release\FWW.Framework.DapperEx.pdb
+F:\netcore\DapperEx1\FWW.DapperEx\obj\Release\FWW.Framework.DapperEx.csproj.CoreCompileInputs.cache
+F:\netcore\DapperEx1\FWW.DapperEx\obj\Release\FWW.Framework.DapperEx.dll
+F:\netcore\DapperEx1\FWW.DapperEx\obj\Release\FWW.Framework.DapperEx.pdb
+F:\netcore\DapperEx1\FWW.DapperEx\bin\Release\FWW.Framework.DapperEx.xml

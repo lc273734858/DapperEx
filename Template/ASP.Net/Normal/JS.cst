@@ -1,0 +1,386 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+
+<%@ Property Category="1.DataBase" Name="table" Type="SchemaExplorer.TableSchema"%>
+<%@ Property Category="1.DataBase" Name="displaycolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="显示字段"%>
+<%@ Property Category="1.DataBase" Name="searchcolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="查询字段"%>
+<%@ Property Category="1.DataBase" Name="editcolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="编辑字段"%>
+<%@ Property Category="1.DataBase" Name="editdisablecolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="编辑时禁用的字段"%>
+<%@ Property Category="1.DataBase" Name="Adddisablecolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="新增时禁用的字段"%>
+<%@ Property Category="1.DataBase" Name="Mustcolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="必须输入的字段" Optional="True"%>
+<%@ Property Category="1.DataBase" Name="primarykey" Type="String" Description="主键"%>
+<%@ Property Category="1.DataBase" Name="primarykeyNeedWrite" Type="Boolean" Description="新增时主键是否需要填写" Default="false"%>
+
+<%@ Property Category="2.Script" Name="FileName" Type="String" Optional="True" Description="文件名称" %>
+<%
+    var editcontrolPre="edit_";//编辑字段前缀    
+    var primaryEditID=editcontrolPre+primarykey;//主键控件ID
+    var ordinaryPrimarykey=primarykey;//来的主键
+    primarykey=primarykey.ToLower();
+%>
+<script runat="template">
+public string GetPrimayKey(ColumnSchema item)
+{
+    StringBuilder sb=new StringBuilder();
+    if (item.IsPrimaryKeyMember)
+	{
+        if ((bool)item.ExtendedProperties["CS_isIdentity"].Value==true)
+        	{
+                sb.AppendLine("[PrimaryKey(AutoIncrement=true)]");		 
+        	}
+            else
+                sb.AppendLine("[PrimaryKey]");
+		 
+	}
+    sb.AppendLine("[DataMember]");
+    return sb.ToString();
+}
+public string GetAlignClass(ColumnSchema item)
+{
+    string algin="";
+    if (item.SystemType==typeof(String))
+	{
+		 algin="text-left";
+	}
+    else
+    {
+        algin="text-right";
+    }
+    return algin;
+}
+public string GetGridText(ColumnSchema item)
+{
+    if (item.Name.ToLower()=="status")
+	{
+		  return "function (source) {switch (source.Status) {case 0:return '创建';case 99:return '删除';default:return '其他';}}";
+	}
+    else{
+    if (item.SystemType==typeof(DateTime))
+	{
+		 return "function (source) { if (source."+item.Name+" != null) return source."+item.Name+".formatDate('yyyy-MM-dd hh:mm'); else return '';}";
+	}
+    else
+    {
+        return string.Format("'{0}'",item.Name);
+    }}
+}
+</script>  
+
+/// <reference path="../extend/APS.js" />
+/// <reference path="../_SysFrame/js/jquery.dataTables.js" />
+/// <reference path="../jquery/jquery.formdeserialize.js" />
+/// <reference path="../jquery/jquery.formSerialize.js" />
+/// <reference path="../Common.js" />
+
+var <%=FileName%> = (function ($) {
+    var o;
+    var table;
+    var core = {
+        init: function (p) {
+            o = $.extend({},p);//ControllerUrl,PageSize,ObjectName
+        },
+        GetTable: function () {
+            table = ExtendDataTable({
+                bInfo: false,//不显示页脚信息
+                bLengthChange: false,//不显示分页
+                entityName: "<%=FileName%>tb",
+                bFilter: "false",
+                "bSort": true,
+                aoSearchParams: ["KeyWord"],
+                iDisplayLength: o.PageSize,
+                url: o.ControllerUrl + "GetPageData",
+                aoColumns: [
+                    {
+                        "sTitle": "操作", "sClass": "text-center col-md-1", "bSortable": false, "mDataProp": function (source, type, val) {
+                            var html = '';
+                            if (source.Status == 99) {
+                                html += '<button type="button" class="btn btn-danger btn-xs" onclick="' + o.ObjectName + '.ReActive(\'' + source.<%=ordinaryPrimarykey%> + '\');">恢复</button>';
+                                html += '<button type="button" class="btn btn-danger btn-xs marginleft5px" onclick="' + o.ObjectName + '.Delete(\'' + source.<%=ordinaryPrimarykey%> + '\');">彻底删除</button>';
+                            }
+                            else{
+                            html += '<button data-toggle="tooltip" data-placement="bottom" title="编辑" type="button" class="btn btn-success btn-xs" onclick="' + o.ObjectName + '.ShowEditPanel(\'' + source.<%=ordinaryPrimarykey%> + '\');"><i class="icon-pencil"></i></button>';
+                            html += '<button data-toggle="tooltip" data-placement="bottom" title="删除" type="button" class="btn btn-danger btn-xs marginleft5px" onclick="' + o.ObjectName + '.DeleteSoft(\'' + source.<%=ordinaryPrimarykey%> + '\');"><i class="icon-remove"></i></button>';
+                            }
+                            return html;
+                        }
+                    },
+                   <%
+                var lastItem=displaycolumns[displaycolumns.Count-1];
+                for (int i = 0; i < displaycolumns.Count-1; i++)
+                {
+                    var item=displaycolumns[i];
+                 %>
+                  { "sTitle": "<%=item.Description %>", "sClass": "<%=GetAlignClass(item)%> col-md-1", "mDataProp": <%=GetGridText(item)%> },
+                <%} %>
+                { "sTitle": "<%=lastItem.Description %>", "sClass": "<%=GetAlignClass(lastItem)%> col-md-1", "mDataProp": <%=GetGridText(lastItem)%> }
+                ],
+                fnCreatedRow: function (nRow, aData, iDataIndex) {
+                },
+                data: function () {
+                    var fields = [<%=GetFieldString(searchcolumns)%>,'Status'];
+                    return GenerateWhere(fields);
+                }
+            });
+        },
+        ShowEditPanel:function(id)
+        {
+            core.ClearPanel();
+            <%for (int i = 0; i < editdisablecolumns.Count; i++)
+			{
+                var item=editdisablecolumns[i];%>
+            $('#<%=editcontrolPre+item.Name%>').attr('disabled','disabled');
+			<%} %>
+            $('#<%=primaryEditID%>').show();
+            $('#btnSave').attr('onclick',o.ObjectName+'.SaveEdit();return false;');
+            $('#htitle').text('编辑');
+            $.ajax({
+                type: "Post",
+                url: o.ControllerUrl + "GetDataByID/",
+                data: { <%=primarykey%>: id },
+                dataType: "json",
+                error: function (msg) {
+                    //
+                },
+                success: function (result) {
+                    if (result.Status == 1) {
+                        core.DataBind(result.Data);
+                        $('#EditPanel').modal('show');
+                    }
+                    else if (result.Message) {
+                        FWW.ModalShowMessage(result.Message);
+                    }
+                }
+            });
+        },
+        ShowAddPanel:function(){
+            core.ClearPanel();
+            $('#htitle').text('新增');
+            <%
+            if (primarykeyNeedWrite)
+        	{%>
+            $('#<%=primaryEditID%>').removeAttr('disabled');
+            	<%}else{%>
+            $('#<%=primaryEditID%>').hide();
+            <%} %>
+            <%for (int i = 0; i < Adddisablecolumns.Count; i++)
+			{
+                var item=Adddisablecolumns[i];%>
+            $('#<%=editcontrolPre+item.Name%>').attr('disabled','disabled');
+			<%} %>
+            $('#btnSave').attr('onclick',o.ObjectName+'.SaveAdd();return false;');
+            $('#EditPanel').modal('show');            
+        },
+        ClearPanel:function()
+        {
+            $('#EditPanel input').removeAttr('disabled');
+            <%for (int i = 0; i < editcolumns.Count; i++)
+			{
+                var item=editcolumns[i];%>
+            $('#<%=editcontrolPre+item.Name%>').val('');
+			<%} %>
+        },
+        DataBind:function(data)
+        {
+            <%for (int i = 0; i < editcolumns.Count; i++)
+			{
+                var item=editcolumns[i];
+                if (item.SystemType.Equals(typeof(DateTime)))
+                {%>
+            $('#<%=editcontrolPre+item.Name%>').val(data.<%=item.Name%>.formatDate('yyyy-MM-dd hh:mm:ss')); 
+            <%}
+              else
+            {%>
+            $('#<%=editcontrolPre+item.Name%>').val(data.<%=item.Name%>);
+			<%}} %>
+        },
+        SaveEdit:function()
+        {
+            var sourcedata=<%=GetFieldValueString(editcolumns,editcontrolPre,primarykey,true)%>;
+            var msg = core.CheckData(sourcedata);
+            if (msg.length>0) {
+                alert(msg);
+                return;
+            }
+            $.ajax({
+                type: "Post",
+                url: o.ControllerUrl + "SaveEdit",
+                data: { source: JSON.stringify(sourcedata) },
+                dataType: "json",
+                error: function (msg) {
+                    //
+                },
+                success: function (result) {
+                    if (result.Status == 1) {
+                        $('#EditPanel').modal('hide');
+                        core.Query();
+                    }
+                    else if (result.Message) {
+                        FWW.ModalShowMessage(result.Message,true);
+                    }
+                }
+            });
+        },
+        SaveAdd:function()
+        {
+            var sourcedata=<%=GetFieldValueString(editcolumns,editcontrolPre,primarykey,primarykeyNeedWrite)%>;
+            var msg = core.CheckData(sourcedata);
+            if (msg.length>0) {
+                alert(msg);
+                return;
+            }
+            $.ajax({
+                type: "Post",
+                url: o.ControllerUrl + "SaveAdd",
+                data: { source: JSON.stringify(sourcedata) },
+                dataType: "json",
+                error: function (msg) {
+                    //
+                },
+                success: function (result) {
+                    if (result.Status == 1) {
+                        $('#EditPanel').modal('hide');
+                        core.Query();
+                    }
+                    else if (result.Message) {
+                        FWW.ModalShowMessage(result.Message,true);
+                    }
+                }
+            });
+        },
+        CheckData: function (data) {
+            var msg = '';
+            <%
+            if (Mustcolumns!=null&&Mustcolumns.Count>0)
+        	{
+        		 foreach (var item in Mustcolumns)
+             	{%>
+            if (data.<%=item.Name%>.length <= 0) {
+                msg+='<%=item.Description%>必须输入\r\n';
+            }
+             	<%}
+        	}
+            %>
+            return msg;
+        },
+        Delete: function (key) {
+            FWW.ModalShowConfirm("确认彻底删除主键为 ["+key+"]的数据？", false, function () {
+                $.ajax({
+                    type: "Post",
+                    url: o.ControllerUrl + "DeleteByID",
+                    data: { <%=primarykey%>: key },
+                    dataType: "json",
+                    error: function (msg) {
+                        //UIkit.notify(msg.responseText);
+                    },
+                    success: function (result) {
+                        if (result.Status == 1) {
+                            //FWW.ModalShowMessage("成功彻底删除数据");
+                            table.fnDraw();
+                        }
+                        else if (result.Message) {
+                            FWW.ModalShowMessage(result.Message);
+                        }
+                    }
+                });
+            });
+        },
+        DeleteSoft: function (key) {
+            FWW.ModalShowConfirm("确认标记主键为 ["+key+"]的数据为删除状态？", false, function () {
+                $.ajax({
+                    type: "Post",
+                    url: o.ControllerUrl + "DeleteSoft",
+                    data: { <%=primarykey%>: key },
+                    dataType: "json",
+                    error: function (msg) {
+                        //UIkit.notify(msg.responseText);
+                    },
+                    success: function (result) {
+                        if (result.Status == 1) {
+                            //FWW.ModalShowMessage("成功标记为删除");
+                            table.fnDraw();
+                        }
+                        else if (result.Message) {
+                            FWW.ModalShowMessage(result.Message);
+                        }
+                    }
+                });
+            });
+        },
+        ReActive: function (key) {
+            FWW.ModalShowConfirm("确认恢复主键为 ["+key+"]的数据？", false, function () {
+                $.ajax({
+                    type: "Post",
+                    url: o.ControllerUrl + "ReActiveID",
+                    data: { <%=primarykey%>: key },
+                    dataType: "json",
+                    error: function (msg) {
+                        //UIkit.notify(msg.responseText);
+                    },
+                    success: function (result) {
+                        if (result.Status == 1) {
+                            //FWW.ModalShowMessage("成功恢复");
+                            table.fnDraw();
+                        }
+                        else if (result.Message) {
+                            FWW.ModalShowMessage(result.Message);
+                        }
+                    }
+                });
+            });
+        },
+        Query: function () {
+            table.fnDraw();
+        },
+        ClearQuery: function () {
+            var status = $('#Status').val();
+            $('#<%=FileName%>Query input').val('');
+            $('#Status').val(status);
+            core.Query();
+        }
+    };
+
+    return function (options) {
+        core.init(options);
+        return core;
+    }
+}(jQuery));
+
+
+<script runat="template">
+public string GetFieldString(ColumnSchemaCollection columns)
+{
+    StringBuilder sb=new StringBuilder();
+    foreach (var item in columns)
+	{
+		 sb.AppendFormat(",'{0}'",item.Name);
+	}   
+    return sb.Remove(0,1).ToString();
+}
+public string GetFieldValueString(ColumnSchemaCollection columns,string prestr,string primarykey,bool needprimary)
+{
+    StringBuilder sb=new StringBuilder();
+    foreach (var item in columns)
+	{
+        if (needprimary)
+    	{
+    	    sb.AppendFormat(",{0}:$('#{1}{0}').val()",item.Name,prestr);
+    	}
+        else
+        {
+            if (!item.Name.ToLower().Equals(primarykey))
+        	{
+        	   sb.AppendFormat(",{0}:$('#{1}{0}').val()",item.Name,prestr);
+        	}
+        }
+	}   
+    sb.Append("}");
+    return "{"+sb.Remove(0,1).ToString();
+}
+</script>

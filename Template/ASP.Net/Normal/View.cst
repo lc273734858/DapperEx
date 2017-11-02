@@ -1,0 +1,206 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+
+<%@ Property Category="1.DataBase" Name="table" Type="SchemaExplorer.TableSchema"%>
+<%@ Property Category="1.DataBase" Name="displaycolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="显示字段"%>
+<%@ Property Category="1.DataBase" Name="searchcolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="查询字段"%>
+<%@ Property Category="1.DataBase" Name="editcolumns" Type="SchemaExplorer.ColumnSchemaCollection" Description="编辑字段"%>
+<%@ Property Category="1.DataBase" Name="primarykey" Type="String" Description="主键"%>
+<%@ Property Category="1.DataBase" Name="primarykeyNeedWrite" Type="Boolean" Description="新增时主键是否需要填写" Default="false"%>
+
+<%@ Property Category="2.Script" Name="FileName" Type="String" Optional="True" Description="文件名称" %>
+<%@ Property Category="2.Script" Name="nameSpace" Type="String" Optional="True" Description="命名空间" %>
+<%@ Property Category="2.Script" Name="title" Type="String" Optional="True" Description="页面标题" %>
+
+@{
+    ViewBag.Title = "<%=title%>";
+    <% 
+var lastindex=nameSpace.LastIndexOf(".")+1;
+var lastnamespace=nameSpace.Substring(lastindex);
+%> 
+}
+<link href="@Url.ContentEx("~/Content/Site.css")" rel="stylesheet" />
+<link href="@Url.ContentEx("~/Scripts/_SysFrame/pagecss/page.css")" rel="stylesheet" />
+<link href="@Url.ContentEx("~/Scripts/_SysFrame/pagecss/table.css")" rel="stylesheet" />
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            @Html.Partial("~/Views/<%=lastnamespace%>/title.cshtml")
+            <div class="panel-body">
+                <div class="form-horizontal" id="<%=FileName%>Query">
+                <%int i=0;
+                try{    
+                    for (; i < searchcolumns.Count-1; i+=2)
+                {
+                    ColumnSchema item=searchcolumns[i];
+                    ColumnSchema item1=searchcolumns[i+1];
+                    var length="";
+                    if (item.SystemType==typeof(string))
+                	{
+                		 length=string.Format("maxlength=\"{0}\"",item.Size);
+                	}
+                    var length1="";
+                    if (item1.SystemType==typeof(string))
+                	{
+                		 length1=string.Format("maxlength=\"{0}\"",item1.Size);
+                	}                    
+                %>
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"><%=item.Description%>:</label>
+                        <div class="col-sm-3">
+                            <input name="<%=item.Name%>" id="<%=item.Name%>" type="text" class="form-control" <%=length%> />
+                        </div>
+                        <label class="col-sm-1 control-label"><%=item1.Description%>:</label>
+                        <div class="col-sm-3">
+                            <input name="<%=item1.Name%>" id="<%=item1.Name%>" type="text" class="form-control" <%=length1%> />
+                        </div>
+                    </div>
+                <%}}catch(Exception ex){
+                 %>    <%=ex.Message%>
+                <%}
+                if(i<searchcolumns.Count)
+                	{
+                       var item=searchcolumns[i];
+                         var length2="";
+                    if (item.SystemType==typeof(string))
+                	{
+                		 length2=string.Format("maxlength=\"{0}\"",item.Size);
+                	}
+                %>
+                    <div class="form-group">
+                        <label class="col-sm-1 control-label"><%=item.Description%>:</label>
+                        <div class="col-sm-3">
+                            <input name="<%=item.Name%>" id="<%=item.Name%>" type="text" class="form-control" <%=length2%> />
+                        </div>
+                    </div>
+                <% 
+                	}
+                %>
+                    <div class="form-group">                    
+                        <div class="col-sm-offset-8 col-sm-4">
+                            <input type="hidden" id="Status" value="" />
+                            <button type="button" class="btn btn-info" onclick="controller.Query();">查询</button>
+                            <button type="button" class="btn btn-info" onclick="controller.ClearQuery();">清空查询</button>
+                            <button type="button" class="btn btn-primary" onclick="controller.ShowAddPanel();">添加</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--分组信息-->
+        </section>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+                <div class="adv-table">
+                    <ul class="nav nav-tabs" id="tabs">
+                        <li role="presentation" class="active" data-id="0"><a href="javascript:void(0);">正常</a></li>
+                        <li role="presentation" data-id="99"><a href="javascript:void(0);">删除</a></li>
+                        <li role="presentation" data-id=""><a href="javascript:void(0);">全部</a></li>
+                    </ul>
+                    <table class="table table-bordered table-hover table-condensed" id="<%=FileName%>tb">
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="EditPanel" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content" style="margin-top: 150px;">
+            <div class="modal-header">
+                <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                <h4 class="modal-title" id="htitle"></h4>
+            </div>
+            <div class="modal-body">@*pre-scrollable 滚动条*@
+                <form class="form-horizontal" role="form" id="AddModuleEditForm">
+<%
+for (int j = 0; j< editcolumns.Count; j++)
+{
+ var edititem=editcolumns[j];
+ var controlname=edititem.Name;
+ var controlid="edit_"+controlname;
+ %>
+                    <div class="form-group">
+                        <label class="col-lg-3 col-sm-2 control-label"><span class="red">*</span><%=edititem.Description%></label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control" id="<%=controlid%>" name="<%=controlname%>" maxlength="<%=edititem.Size%>">
+                        </div>
+                    </div>
+<%}%>                
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnSave" class="btn btn-primary" onclick="controller.Save();return false;">保存</button>
+                <button type="button" class="btn btn-default" aria-hidden="true" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="@Url.ContentEx("~/Scripts/_SysFrame/js/jquery.dataTables.js")"></script>
+<script type="text/javascript" src="@Url.ContentEx("~/Scripts/jquery/jquery.formdeserialize.js")"></script>
+<script type="text/javascript" src="@Url.ContentEx("~/Scripts/jquery/jquery.formSerialize.js")"></script>
+<script type="text/javascript" src="@Url.ContentEx("~/Scripts/CustomJs/tabs.js")"></script>
+<script type="text/javascript" src="@Url.ContentEx("~/Scripts/<%=lastnamespace%>/<%=FileName%>.js")"></script>
+<script type="text/javascript">
+    var controller = new <%=FileName%>({
+        ControllerUrl: '@Url.Content("~/<%=lastnamespace%>/<%=FileName%>/")',
+        ObjectName: 'controller',
+        PageSize: 10
+    });
+    $(document).ready(function () {       
+        $('#Status').val('0');
+        controller.GetTable();
+        $('[data-toggle="tooltip"]').tooltip();
+        $('#tabs').tabs({
+            callback: function (sender) {
+                var status = sender.attr("data-id");
+                $("#Status").val(status);
+                controller.Query();
+            }
+        });
+        $('#<%=FileName%>Query').bind('keypress', function (e) {
+            if (e.keyCode == 13) {
+                controller.Query();
+            }
+        });
+    });
+</script>
+
+<script runat="template">
+/// <summary>
+/// 
+/// </summary>
+/// <param name="item"></param>
+/// <returns></returns>
+public string GetPrimayKey(ColumnSchema item)
+{
+    StringBuilder sb=new StringBuilder();
+    if (item.IsPrimaryKeyMember)
+	{
+		 sb.AppendLine("[PrimaryKey]");
+	}
+    sb.AppendLine("[DataMember]");
+    return sb.ToString();
+}
+/// <summary>
+/// 
+/// </summary>
+/// <param name="item"></param>
+/// <returns></returns>
+public string GetSystemType(ColumnSchema item)
+{
+    if (item.SystemType!=typeof(System.String))//&&item.AllowDBNull
+    	return item.SystemType.Name+"?";
+    return item.SystemType.Name;
+}
+</script>

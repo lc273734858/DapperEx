@@ -1320,5 +1320,6 @@ namespace FWW.Framework.DapperEx
             this.m_Field = fieldName;
         }
     }
+
 }
 

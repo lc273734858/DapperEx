@@ -1,0 +1,24 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="SQL" Debug="False" Description="Generate SQL Insert Statements from table data." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+
+<%@ Property Category="1.DataBase" Name="table" Type="SchemaExplorer.TableSchema" Editor=""%>
+<%@ Property Category="2.PropertyInfo" Name="nmameSpace" Type="String" %>
+<%string tablename=string.Format("[{0}].[{1}]",table.Owner,table.Name);%>
+using System;
+using System.Runtime.Serialization;
+using FWW.Framework.DataOperation.Dapper;
+
+namespace <%=nmameSpace%>.<%=table.Owner %>
+{
+    public partial class <%=table.Name %>Entity
+    {
+        
+    }
+}
