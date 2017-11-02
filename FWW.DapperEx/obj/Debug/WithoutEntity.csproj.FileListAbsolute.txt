@@ -1,0 +1,10 @@
+D:\JohnWorkSpace\NewTFS\OtherProject\HelpTool\HelpTool\ClassLibrary2\bin\Debug\WithoutEntity.dll
+D:\JohnWorkSpace\NewTFS\OtherProject\HelpTool\HelpTool\ClassLibrary2\bin\Debug\WithoutEntity.pdb
+D:\JohnWorkSpace\NewTFS\OtherProject\HelpTool\HelpTool\ClassLibrary2\obj\Debug\WithoutEntity.dll
+D:\JohnWorkSpace\NewTFS\OtherProject\HelpTool\HelpTool\ClassLibrary2\obj\Debug\WithoutEntity.pdb
+E:\Tool\HelpTool\ClassLibrary2\bin\Debug\Amoeba.Framework.DataOperation.Dapper.dll
+E:\Tool\HelpTool\ClassLibrary2\bin\Debug\Amoeba.Framework.DataOperation.Dapper.pdb
+E:\Tool\HelpTool\ClassLibrary2\obj\Debug\Amoeba.Framework.DataOperation.Dapper.dll
+E:\Tool\HelpTool\ClassLibrary2\obj\Debug\Amoeba.Framework.DataOperation.Dapper.pdb
+E:\Tool\HelpTool\ClassLibrary2\bin\Debug\Amoeba.Framework.DataOperation.Dapper.XML
+E:\Tool\HelpTool\ClassLibrary2\obj\Debug\WithoutEntity.csprojResolveAssemblyReference.cache

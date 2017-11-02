@@ -1,0 +1,17 @@
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\FWW.Framework.DapperEx.dll
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\FWW.Framework.DapperEx.pdb
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\FWW.Framework.Common.dll
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\Microsoft.Practices.EnterpriseLibrary.Logging.dll
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\Microsoft.Practices.EnterpriseLibrary.Common.dll
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\Microsoft.Practices.EnterpriseLibrary.ExceptionHandling.dll
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\Microsoft.Practices.ObjectBuilder2.dll
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\Microsoft.Practices.EnterpriseLibrary.Caching.dll
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\FWW.Framework.Utility.dll
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\Microsoft.Practices.Unity.dll
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\FWW.Framework.Common.pdb
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\FWW.Framework.Common.xml
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\FWW.Framework.Utility.pdb
+F:\workfolder\projects\My\ORM\FWW.DapperEx\bin\Release\FWW.Framework.Utility.xml
+F:\workfolder\projects\My\ORM\FWW.DapperEx\obj\Release\FWW.Framework.DapperEx.dll
+F:\workfolder\projects\My\ORM\FWW.DapperEx\obj\Release\FWW.Framework.DapperEx.pdb
+F:\workfolder\projects\My\ORM\FWW.DapperEx\obj\Release\FWW.Framework.DapperEx.csprojResolveAssemblyReference.cache

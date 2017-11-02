@@ -1,0 +1,1341 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FWW.Framework.Common</name>
+    </assembly>
+    <members>
+        <member name="T:FWW.Framework.Common.Configuration.SettingFileChangedEventArgs">
+            <summary>
+            配置文件变更事件参数
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.SettingFileChangedEventArgs.m_ConfigurationFile">
+            <summary>
+            配置文件
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.SettingFileChangedEventArgs.m_EventCode">
+            <summary>
+            事件码
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.SettingFileChangedEventArgs.#ctor(System.String,System.Int32)">
+            <summary>
+            构造方法
+            </summary>
+            <param name="configurationFile">配置文件全路径</param>
+            <param name="eventCode">配置文件变更码</param>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.SettingFileChangedEventArgs.ConfigurationFile">
+            <summary>
+            配置文件
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.SettingFileChangedEventArgs.EventCode">
+            <summary>
+            配置文件的特征码
+            通过将配置文件全路径大写后获取哈希码而得
+            当发生配置文件变更时,如果比较整个文件路径字符串效率较低
+            我们将只比较文件的特征码来重新加载变化的配置文件缓存
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.Configuration.ConfigurationProvider">
+            <summary>
+            系统配置提供器
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.ConfigurationProvider.m_CacheExpirationSlidingTime">
+            <summary>
+            最后一次访问后失效的时间
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.ConfigurationProvider.m_CacheManager">
+            <summary>
+            配置缓存管理器
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.ConfigurationProvider.m_ConfigAccessLock">
+            <summary>
+            配置缓存访问同步锁
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.ConfigurationProvider.m_EventTimers">
+            <summary>
+            时间触发器组
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.ConfigurationProvider.m_TimersLock">
+            <summary>
+            触发器列表管理同步锁
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.ConfigurationProvider.m_EventFireDelay">
+            <summary>
+            事件延迟时间,以毫秒计
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.ConfigurationProvider.m_FileSystemWatcher">
+            <summary>
+            文件监控器
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.Configuration.ConfigurationProvider.EventInfo">
+            <summary>
+            配置文件变更事件信息状态
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.ConfigurationProvider.#ctor(System.String,System.String,System.Boolean,System.Int32,System.Int32)">
+            <summary>
+            系统配置提供器构造函数
+            </summary>
+            <param name="configurationFolder">配置文件路径应为系统全路径</param>
+            <param name="cacheManager">缓存管理器名称</param>
+            <param name="includeSubdirectories">是否包括子目录</param>
+            <param name="cacheExpirationSlidingTime">最后一次访问后失效的时间以分钟计</param>
+            <param name="internalEventBufferSize">内部文件变更事件缓冲区大小</param>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.ConfigurationProvider.FileSystemWatcher_Changed(System.Object,System.IO.FileSystemEventArgs)">
+            <summary>
+            过滤掉相同文件的变更事件
+            当对一个文件进行一次变更的时候,也会同时触发多次文件变更事件,为了只处理一次,所以用Timer机制延迟触发
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.ConfigurationProvider.TimerCallback(System.Object)">
+            <summary>
+            触发真正的变更事件
+            </summary>
+            <param name="state"></param>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ConfigurationProvider.Folder">
+            <summary>
+            要监控的配置目录
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ConfigurationProvider.Filter">
+            <summary>
+            路径过滤器
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ConfigurationProvider.IncludeSubdirectories">
+            <summary>
+            是否监控子目录
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ConfigurationProvider.NotifyFilter">
+            <summary>
+            监控事件过滤器
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ConfigurationProvider.EventFireDelay">
+            <summary>
+            文件变更事件延迟时间,以毫秒计
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ConfigurationProvider.EnableRaisingEvents">
+            <summary>
+            是否激活监控
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ConfigurationProvider.InternalBufferSize">
+            <summary>
+            内部缓存大小
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.ConfigurationProvider.GetConfiguration(System.String,System.Type)">
+            <summary>
+            获取配置
+            </summary>
+            <param name="fileName">配置文件</param>
+            <param name="type">配置类型</param>
+            <returns>配置</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.ConfigurationProvider.GetConfigurationChangedEventCode(System.String)">
+            <summary>
+            获取配置变更事件码
+            </summary>
+            <param name="fileName">配置文件路径</param>
+            <returns>事件码</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.ConfigurationProvider.GetEventCode(System.String)">
+            <summary>
+            由一个字符串获取一个特征码
+            用于配置改变时,加速文件的比较
+            字符串比较的效率要小于整形
+            对于文件名,其字符串较长
+            </summary>
+            <param name="filePath">传入的字符串,通常为配置文件全路径</param>
+            <returns>特征码</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.ConfigurationProvider.LoadConfiguration(System.String,System.Type)">
+            <summary>
+            从配置文件中加载配置
+            </summary>
+            <typeparam name="T">配置类型</typeparam>
+            <param name="fileName">配置文件全路径</param>
+            <returns>配置</returns>
+        </member>
+        <member name="E:FWW.Framework.Common.Configuration.ConfigurationProvider.ConfigurationFileChanged">
+            <summary>
+            配置文件变更事件
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.ConfigurationProvider.Dispose">
+            <summary>
+            显示释放
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.ConfigurationProvider.Finalize">
+            <summary>
+            析构器
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.ConfigurationProvider.Dispose(System.Boolean)">
+            <summary>
+            真正的资源释放程序
+            </summary>
+            <param name="isDisposing">是否正在释放</param>
+        </member>
+        <member name="T:FWW.Framework.Common.Configuration.FrameworkConfigurationElement">
+            <summary>
+            配置项
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.FrameworkConfigurationElement.#ctor">
+            <summary>
+            配置项缺省构造器
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.FrameworkConfigurationElement.#ctor(System.String,System.Type,System.String)">
+            <summary>
+            配置项构造器
+            </summary>
+            <param name="name">配置项名称</param>
+            <param name="type">配置项类型</param>
+            <param name="filePath">配置项路径</param>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.FrameworkConfigurationElement.FilePath">
+            <summary>
+            配置项路径
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.Configuration.FrameworkConfigurationManager">
+            <summary>
+            系统配置管理器
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.s_FrameworkConfiguration">
+            <summary>
+            系统配置节
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.s_FrameworkConfigurationProvider">
+            <summary>
+            系统配置提供器
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.s_FrameworkConfigurationVersion">
+            <summary>
+            版本记数
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.s_VersionLock">
+            <summary>
+            版本访问同步锁
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.#cctor">
+            <summary>
+            静态构造函数
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.Setting">
+            <summary>
+            架构配置节
+            此为静态的,不充许动态变更
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.s_FrameworkConfigurationProvider_ConfigurationFileChanged(System.Object,FWW.Framework.Common.Configuration.SettingFileChangedEventArgs)">
+            <summary>
+            处理配置文件变更事件
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.GetConfigurationVersion(System.Int32)">
+            <summary>
+            获取配置版本
+            </summary>
+            <param name="eventCode">配置文件事件码</param>
+            <returns>当前配置版本</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.GetConfigurationData(System.String)">
+            <summary>
+            获取指定名称的配置
+            </summary>
+            <param name="configName">配置名称</param>
+            <returns>配置项</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.GetConfigurationChangedEventCode(System.String)">
+            <summary>
+            获取配置变更时的事件码
+            </summary>
+            <param name="configName">配置节名称</param>
+            <returns>配置变更事件码</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.GetConfiguration``1(System.String)">
+            <summary>
+            从配置名称加载配置
+            </summary>
+            <typeparam name="T">配置类型</typeparam>
+            <param name="configName">配置名称</param>
+            <returns>配置</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.GetConfigurationFolder(System.String)">
+            <summary>
+            获取配置文件所在目录
+            </summary>
+            <param name="configName">配置名称</param>
+            <returns>配置文件所在目录</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.GetConfigurationFromFileName``1(System.String)">
+            <summary>
+            从相对于配置根路径的文件名加载配置
+            </summary>
+            <typeparam name="T">配置类型</typeparam>
+            <param name="fileName">文件路径</param>
+            <returns>配置</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.GetConfigurationChangedEventCodeFromFileName(System.String)">
+            <summary>
+            由配置文件路径获取变更事件码
+            </summary>
+            <param name="fileName"></param>
+            <returns></returns>
+        </member>
+        <member name="E:FWW.Framework.Common.Configuration.FrameworkConfigurationManager.ConfigurationFileChanged">
+            <summary>
+            配置文件变更事件
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.Configuration.FrameworkConfigurationSection">
+            <summary>
+            构架配置节
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.FrameworkConfigurationSection.ErrorHandlingConfig">
+            <summary>
+            异常配置名称
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.FrameworkConfigurationSection.ESBConfig">
+            <summary>
+            企业服务总线配置名称
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.FrameworkConfigurationSection.LoggingConfig">
+            <summary>
+            日志配置名称
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.Configuration.FrameworkConfigurationSection.SectionName">
+            <summary>
+            系统配置节名称
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.FrameworkConfigurationSection.GetConfig">
+            <summary>
+            获取框架配置节
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.FrameworkConfigurationSection.ConfigurationFolder">
+            <summary>
+            配置文件所在路径
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.FrameworkConfigurationSection.ConfigurationCacheManager">
+            <summary>
+            配置缓存管理器名称
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.FrameworkConfigurationSection.ConfigurationCacheExpirationSlidingTime">
+            <summary>
+            配置缓存最后一次访问后失效时间,以分钟计
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.FrameworkConfigurationSection.Sources">
+            <summary>
+            配置项数组
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.Configuration.ESBSetting">
+            <summary>
+            ESB配置
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Configuration.ESBSetting.GetConfig">
+            <summary>
+            消息处理配置节
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ESBSetting.ProviderDatas">
+            <summary>
+            SOA服务提供者数组
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ESBSetting.NotificationEmail">
+            <summary>
+            提示接收邮箱
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ESBSetting.AdminEmail">
+            <summary>
+            系统管理员电子邮件
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ESBSetting.WhenErrorCloseService">
+            <summary>
+            当错误时关闭服务
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.Configuration.ProviderData">
+            <summary>
+            服务提供者数据
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ProviderData.Address">
+            <summary>
+            地址
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ProviderData.Binding">
+            <summary>
+            绑定
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ProviderData.BindingConfigName">
+            <summary>
+            绑定配置名称
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ProviderData.IssueWindowsToken">
+            <summary>
+            发送windows令牌
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ProviderData.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ProviderData.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ProviderData.Domain">
+            <summary>
+            域
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Configuration.ProviderData.Contract">
+            <summary>
+            服务契约
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.ErrorHandling.Configuration.ErrorData">
+            <summary>
+            错误配置项
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.Configuration.ErrorData.ErrorCode">
+            <summary>
+            错误编号
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.Configuration.ErrorData.Message">
+            <summary>
+            错误描述模板
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.Configuration.ErrorData.Body">
+            <summary>
+            错误描述细节
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.ErrorHandling.Configuration.ErrorHandlingSetting">
+            <summary>
+            错误配置节
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.Configuration.ErrorHandlingSetting.GetErrorData(System.Int32)">
+            <summary>
+            获取错误配置节
+            </summary>
+            <param name="errorCode">错误码</param>
+            <returns>错误配置</returns>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.Configuration.ErrorHandlingSetting.ErrorDatas">
+            <summary>
+            错误
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingData">
+            <summary>
+            异常映射配置信息
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingData.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingData.#ctor(System.String,System.Int32)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="propertyValue">属性值</param>
+            <param name="errorCode">错误码</param>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingData.PropertyValue">
+            <summary>
+            属性值
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingData.ErrorCode">
+            <summary>
+            消息模板
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingDataCollection">
+            <summary>
+            映射配置集合
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingDataCollection.CollectionType">
+            <summary>
+            集合类型
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingDataCollection.ElementName">
+            <summary>
+            元素名称
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingDataCollection.ThrowOnDuplicate">
+            <summary>
+            键重复抛异常
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingDataCollection.Add(FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingData)">
+            <summary>
+            添加映射配置条目
+            </summary>
+            <param name="mapSettingData">映射配置</param>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingDataCollection.Clear">
+            <summary>
+            清除所有映射配置条目
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingDataCollection.CreateNewElement">
+            <summary>
+            创建新的映射配置
+            </summary>
+            <returns>映射配置</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingDataCollection.GetElementKey(System.Configuration.ConfigurationElement)">
+            <summary>
+            取得键值
+            </summary>
+            <param name="element">配置元素</param>
+            <returns>键值</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingDataCollection.Remove(System.Configuration.ConfigurationElement)">
+            <summary>
+            清除映射配置条目
+            </summary>
+            <param name="element">要清除的映射配置条目</param>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingDataCollection.Get(System.String)">
+            <summary>
+            取得配置信息
+            </summary>
+            <param name="properyValue">键值</param>
+            <returns>配置信息</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingDataCollection.Contains(System.String)">
+            <summary>
+            包含查询
+            </summary>
+            <param name="propertyValue">要查找的属性值</param>
+            <returns>是否包含</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingDataCollection.ForEach(System.Action{FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingData})">
+            <summary>
+            遍历器
+            </summary>
+            <param name="action">操作</param>
+        </member>
+        <member name="T:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapWrapperData">
+            <summary>
+            异常映射处理器对象配置信息
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapWrapperData.#ctor">
+            <summary>
+            缺省构造函数
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapWrapperData.#ctor(System.String,System.String,System.String)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="name">处理器名称</param>
+            <param name="propertyName">作为映射依据的属性</param>
+            <param name="defaultPropertyValue">缺省的映射配置</param>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapWrapperData.PropertyName">
+            <summary>
+            作为映射依据的属性
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapWrapperData.DefaultPropertyValue">
+            <summary>
+            缺省的映射配置
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapWrapperData.Maps">
+            <summary>
+            映射配置数组
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapWrapperAssembler">
+            <summary>
+            异常映射处理器对象工厂配置信息
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.ErrorHandling.ErrorException">
+            <summary>
+            错误异常基类
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.ErrorHandling.ErrorException.m_Body">
+            <summary>
+            错误详情
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.ErrorHandling.ErrorException.m_ErrorCode">
+            <summary>
+            错误码
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.ErrorException.#ctor">
+            <summary>
+            缺省构造函数
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.ErrorException.#ctor(System.String)">
+            <summary>
+            由异常信息字符串构造异常
+            </summary>
+            <param name="message">异常信息字符串</param>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.ErrorException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            异常反序列化构造函数
+            </summary>
+            <param name="info"></param>
+            <param name="context"></param>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.ErrorException.#ctor(System.String,System.Exception)">
+            <summary>
+            由内部异常包装新异常构造函数
+            </summary>
+            <param name="message">异常消息</param>
+            <param name="innerException">内部异常</param>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.ErrorException.#ctor(System.Int32,System.String,System.String)">
+            <summary>
+            由错误代码和错误信息创建异常
+            </summary>
+            <param name="errorCode">错误代码</param>
+            <param name="message">错误信息</param>
+            <param name="body">错误详情</param>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.ErrorException.#ctor(System.Int32,System.String,System.String,System.Exception)">
+            <summary>
+            由错误代码和错误信息创建异常
+            </summary>
+            <param name="errorCode">错误代码</param>
+            <param name="message">错误信息</param>
+            <param name="body">错误详情</param>
+            <param name="innerException">内部异常</param>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.ErrorException.ErrorCode">
+            <summary>
+            错误代码
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.ErrorException.Body">
+            <summary>
+            错误详情
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.ErrorException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            将异常码序例化
+            </summary>
+            <param name="info"></param>
+            <param name="context"></param>
+        </member>
+        <member name="T:FWW.Framework.Common.ErrorHandling.ErrorHandler">
+            <summary>
+            错误处理器
+            在业务处理层,服务层,UI层,异常均以ErrorException异常抛出
+            此类帮助用户处理在配置文件配置的异常消息模板
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.ErrorHandler.BuildErrorExceptionFromSetting(System.Int32)">
+            <summary>
+            创建错误异常
+            首先从配置文件中加载指定分类及错误码的异常消息,之后用替换参数替换掉相应异常消息中的占位参数
+            之后用上下文信息替换掉消息中的域占位符
+            </summary>
+            <param name="errorCode">错误代码</param>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.ErrorHandler.BuildErrorExceptionFromSetting(System.Int32,System.Collections.Generic.Dictionary{System.String,System.Object},System.Object[])">
+            <summary>
+            创建错误异常
+            首先从配置文件中加载指定分类及错误码的异常消息,之后用替换参数替换掉相应异常消息中的占位参数
+            之后用域信息替换掉消息中的域占位符
+            </summary>
+            <param name="errorCode">错误代码</param>
+            <param name="objects">域信息</param>
+            <param name="parameters">替换参数</param>
+            <returns>错误异常</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.ErrorHandler.BuildErrorExceptionFromSetting(System.Int32,System.Exception,System.Collections.Generic.Dictionary{System.String,System.Object},System.Object[])">
+            <summary>
+            创建错误异常
+            首先从配置文件中加载指定分类及错误码的异常消息,之后用替换参数替换掉相应异常消息中的占位参数
+            之后用域信息替换掉消息中的域占位符
+            </summary>
+            <param name="errorCode">错误代码</param>
+            <param name="innerException"></param>
+            <param name="objects">域信息</param>
+            <param name="parameters">替换参数</param>
+            <returns>错误异常</returns>
+        </member>
+        <member name="T:FWW.Framework.Common.ErrorHandling.FriendlyException">
+            <summary>
+            错误异常基类
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.ErrorHandling.FriendlyExceptionData">
+            <summary>
+            错误消息
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.ErrorHandling.PropertyMapWrapper">
+            <summary>
+            异常映射处理器对象
+            由原始引发异常的属性值的不同来映射新的异常
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.PropertyMapWrapper.#ctor(System.String,System.String,System.Collections.Generic.Dictionary{System.String,FWW.Framework.Common.ErrorHandling.Configuration.PropertyMapSettingData})">
+            <summary>
+            构造函数
+            </summary>
+            <param name="propertyName">映射所依据的属性名称</param>
+            <param name="defaultMapSetting">缺省的映射配置</param>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.PropertyMapWrapper.PropertyName">
+            <summary>
+            异常包装映射所依赖的属性
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.PropertyMapWrapper.DefaultPropertyValue">
+            <summary>
+            缺省映射配置信息
+            当找不到属性值或属性值为空时的配置
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ErrorHandling.PropertyMapWrapper.Maps">
+            <summary>
+            缺省映射配置信息
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.PropertyMapWrapper.HandleException(System.Exception,System.Guid)">
+            <summary>
+            对异常进行映射
+            </summary>
+            <param name="exception">原始异常</param>
+            <param name="handlingInstanceId">处理器实例唯一标识</param>
+            <returns>映射后的异常类型</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.PropertyMapWrapper.GetObjectPropertyValue(System.Object,System.String)">
+            <summary>
+            通过反射获取对象指定属性或字段值的字符串表示
+            </summary>
+            <param name="obj">对象实例</param>
+            <param name="propertyName">属性或字段名称</param>
+            <returns>属性或字段值的字符串表示</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ErrorHandling.PropertyMapWrapper.GetMapSetting(System.String)">
+            <summary>
+            取得映射配置信息
+            </summary>
+            <param name="propertyValue">属性值</param>
+            <returns>映射配置信息</returns>
+        </member>
+        <member name="T:FWW.Framework.Common.ESB.ClientChannelHelper">
+            <summary>
+            客户端通道帮助类
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ClientChannelHelper.CreateChannel(System.Type,System.String,System.String,System.String,System.Boolean,System.Boolean,System.String,System.String,System.String)">
+            <summary>
+            创建通道
+            </summary>
+            <param name="contractType">契约类型</param>
+            <param name="address">地址</param>
+            <param name="binding">绑定</param>
+            <param name="bindingConfigName">绑定配置</param>
+            <param name="transactionFlow">是否支持事务流</param>
+            <param name="issueWindowsToken">是否发送windows令牌</param>
+            <param name="userName">用户名</param>
+            <param name="password">密码</param>
+            <param name="domain">域</param>
+            <returns>通道</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ClientChannelHelper.CreateChannel``1(System.String,System.String,System.String,System.Boolean,System.Boolean,System.String,System.String,System.String)">
+            <summary>
+            创建通道
+            </summary>
+            <typeparam name="T">契约类型</typeparam>
+            <param name="address">地址</param>
+            <param name="binding">绑定</param>
+            <param name="bindingConfigName">绑定配置</param>
+            <param name="transactionFlow">是否支持事务流</param>
+            <param name="issueWindowsToken">是否发送windows令牌</param>
+            <param name="userName">用户名</param>
+            <param name="password">密码</param>
+            <param name="domain">域</param>
+            <returns>通道</returns>
+        </member>
+        <member name="T:FWW.Framework.Common.ESB.ClientQueueHelper">
+            <summary>
+            队列帮助器
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ClientQueueHelper.EnsureQueue(System.ServiceModel.Description.ServiceEndpoint)">
+            <summary>
+            确保队列存在
+            </summary>
+            <param name="endpoint">服务节点</param>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ClientQueueHelper.PurgeQueue(System.ServiceModel.Description.ServiceEndpoint)">
+            <summary>
+            删除所有的消息
+            </summary>
+            <param name="endpoint"></param>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ClientQueueHelper.GetQueueNameFromUri(System.Uri)">
+            <summary>
+            从uri中取出队列名称
+            </summary>
+            <param name="uri"></param>
+            <returns></returns>
+        </member>
+        <member name="T:FWW.Framework.Common.ESB.ESBRouteInfo">
+            <summary>
+            企业服务总线服务路由信息
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ESB.ESBRouteInfo.GroupName">
+            <summary>
+            组名称
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ESB.ESBRouteInfo.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ESB.ESBRouteInfo.NeedFutherProcessing">
+            <summary>
+            是否需要进一步处理路由信息
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.ESB.ESBRouteMessageHeader">
+            <summary>
+            ESB服务路由消息头
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.ESB.ESBRouteMessageHeader.HeaderName">
+            <summary>
+            头名称
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.ESB.ESBRouteMessageHeader.HeaderNameSpace">
+            <summary>
+            头命名空间
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ESBRouteMessageHeader.Create(FWW.Framework.Common.ESB.ESBRouteInfo)">
+            <summary>
+            创建路由消息头
+            </summary>
+            <param name="routeInfo">服务路由信息</param>
+            <returns>消息头</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ESBRouteMessageHeader.Search(System.ServiceModel.Channels.MessageHeaders)">
+            <summary>
+            检索路由消息头
+            </summary>
+            <param name="headers">消息头集合</param>
+            <returns>检索到的路由消息头</returns>
+        </member>
+        <member name="T:FWW.Framework.Common.ESB.EventProxy">
+            <summary>
+            事件代理
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.ESB.EventProxy.m_Headers">
+            <summary>
+            消息头
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.EventProxy.#ctor(System.Type,System.ServiceModel.Channels.MessageHeader[])">
+            <summary>
+            事件代理
+            </summary>
+            <param name="typeToProxy">要代理的事件接口</param>
+            <param name="headers">消息头</param>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.EventProxy.Invoke(System.Runtime.Remoting.Messaging.IMessage)">
+            <summary>
+            代理调用时的引发逻辑
+            </summary>
+            <param name="msg">方法调用消息</param>
+            <returns>方法调用结果</returns>
+        </member>
+        <member name="T:FWW.Framework.Common.ESB.IESBAssistantService">
+            <summary>
+            企业服务总线辅助服务
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.IESBAssistantService.FutherProcessing">
+            <summary>
+            进一步处理服务路由信息
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.ESB.IESBService">
+            <summary>
+            企业服务总线接口
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.IESBService.FindService(System.String)">
+            <summary>
+            查找服务
+            </summary>
+            <param name="contract">服务契约</param>
+            <returns>服务信息</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.IESBService.PauseService(System.String,System.String)">
+            <summary>
+            暂停服务
+            </summary>
+            <param name="contract">服务契约</param>
+            <param name="providerName">提供者名称</param>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.IESBService.ResumeService(System.String,System.String)">
+            <summary>
+            恢复服务
+            </summary>
+            <param name="contract">服务契约</param>
+            <param name="providerName">提供者名称</param>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.IESBService.InvokeEvent(System.String,System.String,System.Object[])">
+            <summary>
+            引发事件
+            </summary>
+            <param name="contract">事件契约</param>
+            <param name="method">事件方法</param>
+            <param name="parameters">事件参数</param>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.IESBService.SubscribeEvent(System.String,System.String)">
+            <summary>
+            订阅事件
+            </summary>
+            <param name="contract">事件契约</param>
+            <param name="subscriberName">订阅者名称</param>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.IESBService.UnSubscribeEvent(System.String,System.String)">
+            <summary>
+            取消订阅事件
+            </summary>
+            <param name="contract">事件契约</param>
+            <param name="subscriberName">订阅者名称</param>
+        </member>
+        <member name="T:FWW.Framework.Common.ESB.ISelfCheckerService">
+            <summary>
+            支持自检服务
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ISelfCheckerService.SelfCheck">
+            <summary>
+            自检
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.ESB.ServiceFactory">
+            <summary>
+            ESB服务门面
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.ESB.ServiceFactory.s_RandomGenerator">
+            <summary>
+            随机生成器
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ServiceFactory.GetESBService">
+            <summary>
+            获取企业服务总线服务
+            </summary>
+            <returns></returns> 
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ServiceFactory.CreateRouteMessageHeader(System.String,System.String,System.Boolean)">
+            <summary>
+            创建路由消息头
+            </summary>
+            <param name="groupName">组名称</param>
+            <param name="name">名称</param>
+            <param name="needFutherProcessing">是否需要进一步处理</param>
+            <returns>消息头</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ServiceFactory.FindServiceGroup``1(System.String,System.String)">
+            <summary>
+            根据组名查找服务
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="name">服务名称</param>
+            <param name="groupName">服务组名</param>
+            <returns>T.</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ServiceFactory.FindService``1(System.ServiceModel.Channels.MessageHeader[])">
+            <summary>
+            查找服务
+            </summary>
+            <typeparam name="T">服务接口</typeparam>
+            <param name="headers">消息头</param>
+            <returns>服务</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ServiceFactory.FindEvent``1(System.ServiceModel.Channels.MessageHeader[])">
+            <summary>
+            查找事件
+            </summary>
+            <typeparam name="T">事件接口</typeparam>
+            <param name="headers">消息头</param>
+            <returns>事件</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ServiceFactory.SubscribeEvent``1(System.String,System.ServiceModel.Channels.MessageHeader[])">
+            <summary>
+            订阅事件
+            </summary>
+            <typeparam name="T">事件接口</typeparam>
+            <param name="subscriber">订阅者</param>
+            <param name="headers">消息头</param>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.ServiceFactory.UnSubscribeEvent``1(System.String,System.ServiceModel.Channels.MessageHeader[])">
+            <summary>
+            取消事件订阅
+            </summary>
+            <typeparam name="T">事件接口</typeparam>
+            <param name="subscriber">订阅者名称</param>
+            <param name="headers">消息头</param>
+        </member>
+        <member name="T:FWW.Framework.Common.ESB.ServiceInfo">
+            <summary>
+            服务信息
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ESB.ServiceInfo.Name">
+            <summary>
+            提供者名称
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ESB.ServiceInfo.Address">
+            <summary>
+            地址
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ESB.ServiceInfo.Binding">
+            <summary>
+            绑定
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ESB.ServiceInfo.BindingConfigName">
+            <summary>
+            绑定配置名称
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ESB.ServiceInfo.TransactionFlow">
+            <summary>
+            支持事务
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ESB.ServiceInfo.IssueWindowsToken">
+            <summary>
+            发送windows令牌
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ESB.ServiceInfo.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ESB.ServiceInfo.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.ESB.ServiceInfo.Domain">
+            <summary>
+            域
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.ESB.SimpleFactory">
+            <summary>
+            简单服务工厂
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.SimpleFactory.#cctor">
+            <summary>
+            每隔1分钟检查服务可用性，更新到客服务列表
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.Common.ESB.SimpleFactory.s_RandomGenerator">
+            <summary>
+            随机生成器
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.SimpleFactory.FindService``1">
+            <summary>
+            查找本地服务
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.SimpleFactory.FindServiceFromSetting``1">
+            <summary>
+            从配置表中读取
+            </summary>
+            <param name="type"></param>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.SimpleFactory.CheckAvailableService">
+            <summary>
+            检查服务可用性
+            </summary>
+            <param name="type"></param>
+        </member>
+        <member name="T:FWW.Framework.Common.ESB.WebServiceHelper">
+            <summary>
+            调用Web服务的工具类
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.WebServiceHelper.GetJsonResult(System.String,System.String,System.String)">
+            <summary>
+            Gets the json result.
+            </summary>
+            <param name="serviceName">Name of the service.</param>
+            <param name="method">The method.</param>
+            <param name="paramstring">The paramstring.</param>
+            <returns>System.String.</returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.WebServiceHelper.PostUrl(System.String,System.String,System.Text.Encoding,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="url"></param>
+            <param name="paramstring"></param>
+            <param name="encoding"></param>
+            <param name="contentype"></param>
+            <param name="accepttype"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FWW.Framework.Common.ESB.WebServiceHelper.GetUrl(System.String)">
+            <summary>
+            Gets the URL.
+            </summary>
+            <param name="url">The URL.</param>
+            <returns>System.String.</returns>
+        </member>
+        <member name="T:FWW.Framework.Common.Logging.Configuration.EventData">
+            <summary>
+            事件配置项
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Logging.Configuration.EventData.EventId">
+            <summary>
+            事件编号
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Logging.Configuration.EventData.Category">
+            <summary>
+            事件分类
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Logging.Configuration.EventData.Severity">
+            <summary>
+            事件严重等级
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Logging.Configuration.EventData.Message">
+            <summary>
+            事件消息模板
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.Logging.Configuration.LoggingSetting">
+            <summary>
+            日志配置节
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Logging.Configuration.LoggingSetting.GetEventData(System.Int32)">
+            <summary>
+            获取日志配置节
+            </summary>
+            <param name="eventCode">日志编号</param>
+            <returns>错误配置</returns>
+        </member>
+        <member name="P:FWW.Framework.Common.Logging.Configuration.LoggingSetting.EventDatas">
+            <summary>
+            事件分类
+            </summary>
+        </member>
+        <member name="T:FWW.Framework.Common.Logging.Logger">
+            <summary>
+            日志Facade对象
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.Common.Logging.Logger.LogEvent(System.Int32,System.Collections.Generic.Dictionary{System.String,System.Object},System.Object[])">
+            <summary>
+            由系统配置记录日志
+            </summary>
+            <param name="category">日志分类</param>
+            <param name="eventID">事件编号</param>
+            <param name="objects">消息中要替换的域信息</param>
+            <param name="parameters">消息中要替换的参数</param>
+        </member>
+        <member name="M:FWW.Framework.Common.Logging.Logger.LogEvent(System.String,System.Int32,System.String,System.Diagnostics.TraceEventType,System.Collections.Generic.Dictionary{System.String,System.Object},System.Object[])">
+            <summary>
+            记录日志
+            </summary>
+            <param name="category">日志分类</param>
+            <param name="eventID">日志编号</param>
+            <param name="message">消息</param>
+            <param name="severity">级别</param>
+            <param name="objects">消息中要替换的域信息</param>
+            <param name="parameters">消息中要替换的参数</param>
+        </member>
+        <member name="M:FWW.Framework.Common.Logging.Logger.LogEvent(System.String,System.Int32,System.String,System.Diagnostics.TraceEventType)">
+            <summary>
+            日志
+            </summary>
+            <param name="category">分类</param>
+            <param name="eventID">事件编号</param>
+            <param name="severity">事件类型</param>
+            <param name="message">消息</param>
+        </member>
+        <member name="M:FWW.Framework.Common.Logging.Logger.LogEvent(System.String,System.Int32,System.String)">
+            <summary>
+            日志
+            </summary>
+            <param name="category">分类</param>
+            <param name="eventID">事件编号</param>
+            <param name="message">消息</param>
+        </member>
+        <member name="M:FWW.Framework.Common.Logging.Logger.LogEvent(System.String,System.String)">
+            <summary>
+            日志
+            </summary>
+            <param name="category">分类</param>
+            <param name="message">消息</param>
+        </member>
+        <member name="M:FWW.Framework.Common.Logging.Logger.LogEvent(System.String,System.Exception)">
+            <summary>
+            记录日志日志
+            </summary>
+            <param name="category">分类</param>
+            <param name="ex">异常</param>
+        </member>
+        <member name="T:FWW.Framework.Common.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Properties.Resources.ExceptionConfigurationFileIsInvalid">
+            <summary>
+              Looks up a localized string similar to 无法加载配置文件，配置文件&apos;{0}&apos;无效！.
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Properties.Resources.ExceptionConfigurationFileNotFound">
+            <summary>
+              Looks up a localized string similar to 无法加载配置文件，配置文件&apos;{0}&apos;不存在！.
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Properties.Resources.ExceptionConfigurationSectionNotFound">
+            <summary>
+              Looks up a localized string similar to 无法加载配置文件，配置节&apos;{0}&apos;不存在！.
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Properties.Resources.ExceptionDefaultPropertyNotFound">
+            <summary>
+              Looks up a localized string similar to 无法进行异常映射，缺省异常属性&apos;{0}&apos;未设置！.
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Properties.Resources.ExceptionErrorCodeNotFound">
+            <summary>
+              Looks up a localized string similar to 无法加载系统异常，异常代码为&apos;{0}&apos;的异常配置不存在！.
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Properties.Resources.ExceptionInvalidEventInvoke">
+            <summary>
+              Looks up a localized string similar to 事件引发失败，无效的事件引发！.
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Properties.Resources.ExceptionInvalidServiceConfiguration">
+            <summary>
+              Looks up a localized string similar to 创建服务通道失败，服务&apos;{0}‘未启动或配置无效！.
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Properties.Resources.ExceptionLogEventNotFound">
+            <summary>
+              Looks up a localized string similar to 无法加载日志事件，事件编码为&apos;{0}&apos;的日志配置不存在！.
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Properties.Resources.ExceptionNoAvailabeService">
+            <summary>
+              Looks up a localized string similar to 创建服务通道失败，无可用的&apos;{0}&apos;服务！.
+            </summary>
+        </member>
+        <member name="P:FWW.Framework.Common.Properties.Resources.ExceptionPropertyNotFound">
+            <summary>
+              Looks up a localized string similar to 无法进行异常映射，原始异常不存在属性&apos;{0}&apos;！.
+            </summary>
+        </member>
+    </members>
+</doc>

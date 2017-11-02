@@ -1,0 +1,5 @@
+D:\JohnWorkSpace\NewTFS\OtherProject\HelpTool\HelpTool\ClassLibrary2\bin\Debug\ClassLibrary2.dll
+D:\JohnWorkSpace\NewTFS\OtherProject\HelpTool\HelpTool\ClassLibrary2\bin\Debug\ClassLibrary2.pdb
+D:\JohnWorkSpace\NewTFS\OtherProject\HelpTool\HelpTool\ClassLibrary2\obj\Debug\ClassLibrary2.dll
+D:\JohnWorkSpace\NewTFS\OtherProject\HelpTool\HelpTool\ClassLibrary2\obj\Debug\ClassLibrary2.pdb
+D:\JohnWorkSpace\NewTFS\OtherProject\HelpTool\HelpTool\ClassLibrary2\obj\Debug\ClassLibrary2.csprojResolveAssemblyReference.cache

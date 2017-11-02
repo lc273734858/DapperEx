@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7627D27B-935E-481B-9C5E-C599FFA160B1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FWW.Framework.DapperEx</RootNamespace>
+    <AssemblyName>FWW.Framework.DapperEx</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CSHARP30</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Debug\FWW.Framework.DapperEx.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FWW.Framework.Common">
+      <HintPath>..\..\FWW\DLL\FWW.Framework.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Attribute\BaseAttribute.cs" />
+    <Compile Include="Attribute\ColumnAttribute.cs" />
+    <Compile Include="Check.cs" />
+    <Compile Include="EntityCacheInfo.cs" />
+    <Compile Include="LamdaExpress\Common\DataUtils.cs" />
+    <Compile Include="LamdaExpress\Common\DynamicCalls.cs" />
+    <Compile Include="LamdaExpress\Common\BaseEntity.cs" />
+    <Compile Include="LamdaExpress\Common\EntityUtils.cs" />
+    <Compile Include="LamdaExpress\Common\EnumHelper.cs" />
+    <Compile Include="LamdaExpress\Common\Field.cs" />
+    <Compile Include="LamdaExpress\Common\ILogable.cs" />
+    <Compile Include="LamdaExpress\Common\SerializationManager.cs" />
+    <Compile Include="LamdaExpress\Database.cs" />
+    <Compile Include="LamdaExpress\Expression\CacheEvaluator.cs" />
+    <Compile Include="LamdaExpress\Expression\ConstantExtractor.cs" />
+    <Compile Include="LamdaExpress\Expression\ConstructorInvoker.cs" />
+    <Compile Include="LamdaExpress\Expression\CustomWhere.cs" />
+    <Compile Include="LamdaExpress\Expression\DelegateGenerator.cs" />
+    <Compile Include="LamdaExpress\Expression\Evaluator.cs" />
+    <Compile Include="LamdaExpress\Expression\Expression.cs" />
+    <Compile Include="LamdaExpress\Expression\ExpressionComparer.cs" />
+    <Compile Include="LamdaExpress\Expression\ExpressionHasher.cs" />
+    <Compile Include="LamdaExpress\Expression\ExpressionToClip.cs" />
+    <Compile Include="LamdaExpress\Expression\ExpressionVisitor.cs" />
+    <Compile Include="LamdaExpress\Expression\FastEvaluator.cs" />
+    <Compile Include="LamdaExpress\Expression\FastPartialEvaluator.cs" />
+    <Compile Include="LamdaExpress\Expression\FastReflection.cs" />
+    <Compile Include="LamdaExpress\Expression\FieldAccessor.cs" />
+    <Compile Include="LamdaExpress\Expression\GroupByClip.cs" />
+    <Compile Include="LamdaExpress\Expression\HashedListCache.cs" />
+    <Compile Include="LamdaExpress\Expression\IEvaluator.cs" />
+    <Compile Include="LamdaExpress\Expression\IExpressionCache.cs" />
+    <Compile Include="LamdaExpress\Expression\LambdaWhereClip.cs" />
+    <Compile Include="LamdaExpress\Expression\MethodInvoker.cs" />
+    <Compile Include="LamdaExpress\Expression\OrderByClip.cs" />
+    <Compile Include="LamdaExpress\Expression\Parameter.cs" />
+    <Compile Include="LamdaExpress\Expression\Parameters.cs" />
+    <Compile Include="LamdaExpress\Expression\PartialEvaluator.cs" />
+    <Compile Include="LamdaExpress\Expression\PartialEvaluatorBase.cs" />
+    <Compile Include="LamdaExpress\Expression\PropertyAccessor.cs" />
+    <Compile Include="LamdaExpress\Expression\WeakTypeDelegateGenerator.cs" />
+    <Compile Include="LamdaExpress\Expression\WhereClipEx.cs" />
+    <Compile Include="LamdaExpress\Expression\WhereClipBuilder.cs" />
+    <Compile Include="LamdaExpress\FromSection.cs" />
+    <Compile Include="LamdaExpress\ProcedureSection.cs" />
+    <Compile Include="LamdaExpress\Provider\DataBaseType.cs" />
+    <Compile Include="LamdaExpress\Provider\DbProvider.cs" />
+    <Compile Include="LamdaExpress\Provider\MsAccessProvider.cs" />
+    <Compile Include="LamdaExpress\Provider\OracleProvider.cs" />
+    <Compile Include="LamdaExpress\Provider\ProviderFactory.cs" />
+    <Compile Include="LamdaExpress\Provider\SqlServer9Provider.cs" />
+    <Compile Include="LamdaExpress\Provider\SqlServerProvider.cs" />
+    <Compile Include="LamdaExpress\Section.cs" />
+    <Compile Include="LamdaExpress\SqlSection.cs" />
+    <Compile Include="DataContext.cs" />
+    <Compile Include="ValueConvert.cs" />
+    <Compile Include="SystemSetting.cs" />
+    <Compile Include="SystemTask.cs" />
+    <Compile Include="MyConnectionStates.cs" />
+    <Compile Include="ExtendMethod.cs" />
+    <Compile Include="PageResult.cs" />
+    <Compile Include="EntityCacheManager.cs" />
+    <Compile Include="EntityCache.cs" />
+    <Compile Include="SqlMapper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WhereObject.cs" />
+    <Compile Include="WhereObjectList.cs" />
+    <Compile Include="WhereOperation.cs" />
+    <Compile Include="SqlDataParamter.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
