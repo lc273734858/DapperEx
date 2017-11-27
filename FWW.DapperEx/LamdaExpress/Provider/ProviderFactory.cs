@@ -167,13 +167,15 @@ namespace FWW.Framework.DapperEx
                         DbProvider dbProvider;
                         ConnectionStringSettings connStrSetting = ConfigurationManager.ConnectionStrings[ConfigurationManager.ConnectionStrings.Count - 1];
                         string[] assAndClass = connStrSetting.ProviderName.Split(',');
+                        //翻译密码
+                        var connectionString = EncryptHelper.DecrypConnectionstring(connStrSetting.ConnectionString);
                         if (assAndClass.Length > 1)
                         {
-                            dbProvider = CreateDbProvider(assAndClass[1].Trim(), assAndClass[0].Trim(), connStrSetting.ConnectionString, null);
+                            dbProvider = CreateDbProvider(assAndClass[1].Trim(), assAndClass[0].Trim(), connectionString, null);
                         }
                         else
                         {
-                            dbProvider = CreateDbProvider(null, assAndClass[0].Trim(), connStrSetting.ConnectionString, null);
+                            dbProvider = CreateDbProvider(null, assAndClass[0].Trim(), connectionString, null);
                         }
 
                         dbProvider.ConnectionStringsName = connStrSetting.Name;
@@ -206,13 +208,14 @@ namespace FWW.Framework.DapperEx
                 throw new Exception("数据库连接字符串【" + connStrName + "】没有配置！");
             }
             string[] assAndClass = connStrSetting.ProviderName.Split(',');
+            var connectionstring = EncryptHelper.DecrypConnectionstring(connStrSetting.ConnectionString);
             if (assAndClass.Length > 1)
             {
-                dbProvider = CreateDbProvider(assAndClass[0].Trim(), assAndClass[1].Trim(), connStrSetting.ConnectionString, null);
+                dbProvider = CreateDbProvider(assAndClass[0].Trim(), assAndClass[1].Trim(), connectionstring, null);
             }
             else
             {
-                dbProvider = CreateDbProvider(null, assAndClass[0].Trim(), connStrSetting.ConnectionString, null);
+                dbProvider = CreateDbProvider(null, assAndClass[0].Trim(), connectionstring, null);
             }
             dbProvider.ConnectionStringsName = connStrName;
             return dbProvider;

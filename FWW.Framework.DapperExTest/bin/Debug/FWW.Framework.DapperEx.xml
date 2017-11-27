@@ -429,6 +429,82 @@
             实体信息
             </summary>
         </member>
+        <member name="T:FWW.Framework.DapperEx.EncryptHelper">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:FWW.Framework.DapperEx.EncryptHelper.EncryKey">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:FWW.Framework.DapperEx.EncryptHelper.Md5Encode(System.String,System.Int32)">
+            <summary>  
+            MD5加密不区分大小写的  
+            </summary>  
+            <param name="pwd">源字符串</param>  
+            <param name="type">16位还是32位，16位就是取32位的第8到16位</param>  
+            <returns></returns>  
+        </member>
+        <member name="M:FWW.Framework.DapperEx.EncryptHelper.SHA1Encrypt(System.String)">
+            <summary>  
+            对字符串进行SHA1加密  
+            </summary>  
+            <param name="Source_String">需要加密的字符串</param>  
+            <returns>密文</returns>  
+        </member>
+        <member name="M:FWW.Framework.DapperEx.EncryptHelper.SHA256Encrypt(System.String)">
+            <summary>  
+            SHA256加密，不可逆转  
+            </summary>  
+            <param name="str">string str:被加密的字符串</param>  
+            <returns>返回加密后的字符串</returns>  
+        </member>
+        <member name="M:FWW.Framework.DapperEx.EncryptHelper.SHA384Encrypt(System.String)">
+            <summary>  
+            SHA384加密，不可逆转  
+            </summary>  
+            <param name="str">string str:被加密的字符串</param>  
+            <returns>返回加密后的字符串</returns>  
+        </member>
+        <member name="M:FWW.Framework.DapperEx.EncryptHelper.SHA512Encrypt(System.String)">
+            <summary>  
+            SHA512加密，不可逆转  
+            </summary>  
+            <param name="str">string str:被加密的字符串</param>  
+            <returns>返回加密后的字符串</returns>  
+        </member>
+        <member name="M:FWW.Framework.DapperEx.EncryptHelper.EncryptDES(System.String,System.String)">
+            <summary>  
+            DES加密  
+            </summary>  
+            <param name="encryptString">待加密的字符串</param>  
+            <param name="encryptKey">加密密匙，要求为8位</param>  
+            <returns></returns>  
+        </member>
+        <member name="M:FWW.Framework.DapperEx.EncryptHelper.DecryptDES(System.String,System.String)">
+            <summary>  
+            DES解密字符串  
+            </summary>  
+            <param name="decryptString">待解密的字符串</param>  
+            <param name="decryptKey">解密密钥,要求为8位,和加密密钥相同</param>  
+            <returns></returns>  
+        </member>
+        <member name="M:FWW.Framework.DapperEx.EncryptHelper.Base64Encode(System.String)">
+            <summary>  
+            BASE64加密字符串  
+            </summary>  
+            <param name="str">源字符串</param>  
+            <returns></returns>   
+        </member>
+        <member name="M:FWW.Framework.DapperEx.EncryptHelper.Base64Decode(System.String)">
+            <summary>  
+            BASE64解密字符串  
+            </summary>  
+            <param name="base64Str">Base64字串</param>  
+            <returns></returns>   
+        </member>
         <member name="T:FWW.Framework.DapperEx.EntityUtils">
             <summary>
             实体帮助类

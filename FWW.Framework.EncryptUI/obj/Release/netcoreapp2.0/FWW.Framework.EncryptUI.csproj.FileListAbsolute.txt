@@ -1,0 +1,11 @@
+F:\netcore\DapperEx1\FWW.Framework.EncryptUI\bin\Release\netcoreapp2.0\FWW.Framework.EncryptUI.deps.json
+F:\netcore\DapperEx1\FWW.Framework.EncryptUI\bin\Release\netcoreapp2.0\FWW.Framework.EncryptUI.runtimeconfig.json
+F:\netcore\DapperEx1\FWW.Framework.EncryptUI\bin\Release\netcoreapp2.0\FWW.Framework.EncryptUI.runtimeconfig.dev.json
+F:\netcore\DapperEx1\FWW.Framework.EncryptUI\bin\Release\netcoreapp2.0\FWW.Framework.EncryptUI.dll
+F:\netcore\DapperEx1\FWW.Framework.EncryptUI\bin\Release\netcoreapp2.0\FWW.Framework.EncryptUI.pdb
+F:\netcore\DapperEx1\FWW.Framework.EncryptUI\obj\Release\netcoreapp2.0\FWW.Framework.EncryptUI.csprojResolveAssemblyReference.cache
+F:\netcore\DapperEx1\FWW.Framework.EncryptUI\obj\Release\netcoreapp2.0\FWW.Framework.EncryptUI.csproj.CoreCompileInputs.cache
+F:\netcore\DapperEx1\FWW.Framework.EncryptUI\obj\Release\netcoreapp2.0\FWW.Framework.EncryptUI.AssemblyInfoInputs.cache
+F:\netcore\DapperEx1\FWW.Framework.EncryptUI\obj\Release\netcoreapp2.0\FWW.Framework.EncryptUI.AssemblyInfo.cs
+F:\netcore\DapperEx1\FWW.Framework.EncryptUI\obj\Release\netcoreapp2.0\FWW.Framework.EncryptUI.dll
+F:\netcore\DapperEx1\FWW.Framework.EncryptUI\obj\Release\netcoreapp2.0\FWW.Framework.EncryptUI.pdb

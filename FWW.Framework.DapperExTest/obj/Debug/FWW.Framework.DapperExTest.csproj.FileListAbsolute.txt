@@ -74,7 +74,5 @@ F:\netcore\DapperEx1\FWW.Framework.DapperExTest\bin\Debug\FWW.Framework.DapperEx
 F:\netcore\DapperEx1\FWW.Framework.DapperExTest\bin\Debug\FWW.Framework.DapperEx.MySql.pdb
 F:\netcore\DapperEx1\FWW.Framework.DapperExTest\bin\Debug\FWW.Framework.DapperEx.MySql.dll.config
 F:\netcore\DapperEx1\FWW.Framework.DapperExTest\bin\Debug\Dos.ORM.pdb
-F:\netcore\DapperEx1\FWW.Framework.DapperExTest\bin\Debug\FWW.Framework.Common.pdb
-F:\netcore\DapperEx1\FWW.Framework.DapperExTest\bin\Debug\FWW.Framework.Common.xml
 F:\netcore\DapperEx1\FWW.Framework.DapperExTest\bin\Debug\FWW.Framework.Utility.pdb
 F:\netcore\DapperEx1\FWW.Framework.DapperExTest\bin\Debug\FWW.Framework.Utility.xml

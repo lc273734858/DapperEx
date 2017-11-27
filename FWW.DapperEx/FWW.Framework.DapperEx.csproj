@@ -64,6 +64,7 @@
     <Compile Include="LamdaExpress\Common\DataUtils.cs" />
     <Compile Include="LamdaExpress\Common\DynamicCalls.cs" />
     <Compile Include="LamdaExpress\Common\BaseEntity.cs" />
+    <Compile Include="LamdaExpress\Common\EncryptHelper.cs" />
     <Compile Include="LamdaExpress\Common\EntityUtils.cs" />
     <Compile Include="LamdaExpress\Common\EnumHelper.cs" />
     <Compile Include="LamdaExpress\Common\Field.cs" />

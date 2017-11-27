@@ -1,0 +1,12 @@
+F:\netcore\DapperEx1\FWW.Framework.EncryptUI
+--output-path=obj\Release\netcoreapp2.0\
+--application-name=FWW.Framework.EncryptUI
+--content-root=F:\netcore\DapperEx1\FWW.Framework.EncryptUI
+--file=F:\netcore\DapperEx1\FWW.Framework.EncryptUI\Views\Home\About.cshtml
+--file=F:\netcore\DapperEx1\FWW.Framework.EncryptUI\Views\Home\Contact.cshtml
+--file=F:\netcore\DapperEx1\FWW.Framework.EncryptUI\Views\Home\Index.cshtml
+--file=F:\netcore\DapperEx1\FWW.Framework.EncryptUI\Views\Shared\Error.cshtml
+--file=F:\netcore\DapperEx1\FWW.Framework.EncryptUI\Views\Shared\_Layout.cshtml
+--file=F:\netcore\DapperEx1\FWW.Framework.EncryptUI\Views\Shared\_ValidationScriptsPartial.cshtml
+--file=F:\netcore\DapperEx1\FWW.Framework.EncryptUI\Views\_ViewImports.cshtml
+--file=F:\netcore\DapperEx1\FWW.Framework.EncryptUI\Views\_ViewStart.cshtml

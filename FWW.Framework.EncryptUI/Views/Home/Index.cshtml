@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "密码加密器";
+}
+<form>
+    <div class="form-group" style="margin-top:20px">
+        <label for="password">明文</label>
+        <input type="password" class="form-control" id="password" name="password" autocomplete="off" placeholder="明文">
+    </div>
+    <button class="btn btn-primary" type="button" onclick="encrypt()">生成密文</button>
+</form>
+<div class="row">
+    <div class="col-md-12 text-left">
+        <label style="margin-top:10px" id="result"></label>
+    </div>
+</div>
+<script type="text/javascript">
+    function encrypt() {
+        var password = $("#password").val();
+        if (password.length > 0) {
+            $.post("/home/encrypt", { password: password }, function (result) {
+                $("#result").text(result);
+            }
+            );
+        }
+    }
+</script>

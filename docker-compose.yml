@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  fww.framework.encryptui:
+    image: fww.framework.encryptui
+    build:
+      context: ./FWW.Framework.EncryptUI
+      dockerfile: Dockerfile

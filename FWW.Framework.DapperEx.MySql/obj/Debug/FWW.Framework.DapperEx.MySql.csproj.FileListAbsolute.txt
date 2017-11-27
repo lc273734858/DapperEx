@@ -65,8 +65,6 @@ F:\netcore\DapperEx1\FWW.Framework.DapperEx.MySql\bin\Debug\Microsoft.Practices.
 F:\netcore\DapperEx1\FWW.Framework.DapperEx.MySql\bin\Debug\FWW.Framework.DapperEx.pdb
 F:\netcore\DapperEx1\FWW.Framework.DapperEx.MySql\bin\Debug\FWW.Framework.DapperEx.xml
 F:\netcore\DapperEx1\FWW.Framework.DapperEx.MySql\bin\Debug\System.Net.Http.xml
-F:\netcore\DapperEx1\FWW.Framework.DapperEx.MySql\bin\Debug\FWW.Framework.Common.pdb
-F:\netcore\DapperEx1\FWW.Framework.DapperEx.MySql\bin\Debug\FWW.Framework.Common.xml
 F:\netcore\DapperEx1\FWW.Framework.DapperEx.MySql\bin\Debug\FWW.Framework.Utility.pdb
 F:\netcore\DapperEx1\FWW.Framework.DapperEx.MySql\bin\Debug\FWW.Framework.Utility.xml
 F:\netcore\DapperEx1\FWW.Framework.DapperEx.MySql\bin\Debug\zh-Hans\System.Net.Http.resources.dll
